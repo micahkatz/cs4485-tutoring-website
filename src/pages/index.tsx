@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import NavBar from '../components/NavBar'
+import TutorCard from '@/components/TutorCard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,8 +17,8 @@ export default function Home() {
       </Head>
       <main>
         <NavBar />
-        <div className=''>
-
+        <div className='p-4'>
+          <TutorCard />
         </div>
       </main>
     </>
