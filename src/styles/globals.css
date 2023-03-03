@@ -6,3 +6,23 @@
 body {
   background: var(--color-background)
 }
+
+@layer components {
+  .action-panel-layout {
+    @apply flex m-auto absolute h-full;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .action-panel-button {
+    @apply w-48 m-auto align-top text-center font-bold space-y-1;
+    height: 192px;
+  }
+
+  .action-panel-image {
+    @apply m-auto;
+    max-width:112px;
+    height: 112px;
+  }
+}
