@@ -38,6 +38,14 @@ module.exports = {
         accent: '#F4B740',
       },
     },
+
+    maxWidth: {
+      '1': '100%',
+    },
+
+    maxHeight: {
+      '1': '100%',
+    },
   },
   plugins: [],
 }
