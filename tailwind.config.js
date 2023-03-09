@@ -32,6 +32,14 @@ module.exports = {
                 secondary: '#6B7280',
             },
         },
+    
+    maxWidth: {
+      '1': '100%',
     },
-    plugins: [],
-};
+
+    maxHeight: {
+      '1': '100%',
+    },
+  },
+  plugins: [],
+}
