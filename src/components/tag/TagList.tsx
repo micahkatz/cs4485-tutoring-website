@@ -15,6 +15,12 @@ const TagList = (props: Props) => {
             <CommonTag
                 name='Science'
             />
+            <CommonTag
+                name='Math'
+            />
+            {/* <CommonTag
+                name='Science'
+            /> */}
         </div>
     )
 }
