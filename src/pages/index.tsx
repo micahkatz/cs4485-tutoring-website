@@ -22,7 +22,7 @@ export default function Home() {
       <main>
         <NavBar />
         <ActionPanel />
-        <div className='p-4'>
+        <div className='p-4 flex flex-col items-center'>
           <SearchBar />
           <TutorFeed />
         </div>
