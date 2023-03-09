@@ -4,6 +4,8 @@ import { Inter } from '@next/font/google'
 import NavBar from '../components/NavBar'
 import ActionPanel from '../components/ActionPanel'
 import TutorFeed from '../components/TutorFeed'
+import TutorCard from '@/components/TutorCard'
+import SearchBar from '@/components/SearchBar'
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,7 +22,10 @@ export default function Home() {
       <main>
         <NavBar />
         <ActionPanel />
-        <TutorFeed />
+        <div className='p-4'>
+          <SearchBar />
+          <TutorFeed />
+        </div>
       </main>
     </>
   )
