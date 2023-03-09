@@ -22,7 +22,7 @@ const ActionPanel = (props: Props) => {
                     <div className="h-48 m-auto ml-8 mr-8 align-top text-center font-bold space-y-1 max-w-1">
                         <span className="text-sm">My Bookmarks</span>
                         <IoBookmarksOutline size='7rem' className="m-auto"/>
-                        <p className="text-base">1 Saved</p>
+                        <p className="text-base">0 Saved</p>
                     </div>
                     <div className="h-48 m-auto ml-8 mr-8 align-top text-center font-bold space-y-1 max-w-1">
                         <span className="text-sm">My Profile</span>

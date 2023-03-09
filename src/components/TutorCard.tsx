@@ -1,4 +1,5 @@
 import React from 'react'
+import { IoBookmarkOutline, IoBookmark } from 'react-icons/io5'
 
 type Props = {}
 
@@ -15,7 +16,7 @@ const TutorCard = (props: Props) => {
                     <span className='bg-purple-500 w-auto h-6 text-sm p-0.5 mt-2 mr-2'>BIOLOGY</span>
                 </div>
                 <button>
-                    <img src='my_bookmarks.png' className='mt-1.5 h-8' />
+                    <IoBookmarkOutline size='2rem' className='mt-1.5' />
                 </button>
             </div>
         </div>
