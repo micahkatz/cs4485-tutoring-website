@@ -12,24 +12,55 @@ datasource db {
 
 
 model user {
-  userID  Int   @id   @default(autoincrement())
-  username  String  @unique
+  userID  Int   @id @unique   @default(autoincrement())
+  tutorID tutor?     //user can have 0 or 1 relation to a tutor ID. All tutors are users, but not all users are tutors
+  username  String 
   first_name  String
   last_name   String
   password    String
   totalHours  Int    @default(0)
 }
 
-// model Tutor {
-//   userID  User   @id   @relation(fields: [authorId], references: [id])
-//   tutUser 
-//   about_me String   
+model tutor {
+  tutorID Int @id @default(autoincrement())
+  user  user  @relation(fields: [fk_userID], references: [userID])
+  fk_userID Int @unique  //This is the value in the DB
+  about_me String
+  totalHours Int @default(0)
+}
+
+// model subject {
+//   subjectID Int @id @default(autoincrement())
+//   name String
+//   description String
 // }
 
-// model Tutor {
-//   userID  Int   @id   @default(autoincrement())
-//   about_me String
+// model availability {
+//   startDate String
+//   endDate String
+//   daysUntilRepeat Int
+//   monthsUntilRepeat Int
+//   startTime String
+//   endTime String
+//   daysOfWeek String
 // }
+
+// model appointment {
+//   appointID Int @id @default(autoincrement())
+//   startTimeStamp String
+//   endTimeStamp String
+//   date String
+// }
+
+// model tutors_subjects{
+
+// }
+
+// model user_favorites {
+
+// }
+
+
 
 ///Example
 
