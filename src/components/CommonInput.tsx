@@ -2,16 +2,16 @@ import React, { InputHTMLAttributes } from 'react'
 interface Props extends React.InputHTMLAttributes<HTMLTextAreaElement | HTMLInputElement> {
     outerClass?: string;
     innerClass?: string;
-    type?: 'TextArea' | 'Input'
+    inputType?: 'TextArea' | 'Input'
 }
 
 const CommonInput = (props: Props) => {
-    const { innerClass, outerClass, type, ...leftoverProps } = props
+    const { innerClass, outerClass, inputType, ...leftoverProps } = props
     return (
         <div className={`flex flex-col ${props.outerClass}`}>
             <span className='text-sm'>{props.placeholder}</span>
             {
-                type === 'TextArea' ? (
+                inputType === 'TextArea' ? (
                     <textarea
                         placeholder='First Name'
                         aria-multiline='true'
