@@ -31,7 +31,7 @@ const AccountPage = (props: Props) => {
                                 </div> */}
                             </button>
                             <div className='flex flex-col'>
-                                <span className='text-primary text-lg'>Micah Katz</span>
+                                <span className='text-primary text-lg'>John Doe</span>
                                 <button>
                                     <span className='text-link font-bold hover:text-primary text-sm'>Change profile photo</span>
                                 </button>
@@ -51,6 +51,9 @@ const AccountPage = (props: Props) => {
                                     placeholder='Last Name'
                                 />
                             </div>
+                            <CommonInput
+                                placeholder='Email'
+                            />
                             <CommonInput
                                 innerClass='h-40'
                                 placeholder='About Me'
