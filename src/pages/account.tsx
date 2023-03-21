@@ -1,13 +1,9 @@
 import React from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
 import NavBar from '../components/NavBar'
 import { useRouter } from 'next/router'
-import CommonTag from '@/components/tag/CommonTag'
-import TagList from '@/components/tag/TagList'
 import CommonInput from '@/components/CommonInput'
-import { IoCamera } from 'react-icons/io5'
+import { IoCamera, IoSettingsOutline } from 'react-icons/io5'
 
 type Props = {}
 
@@ -26,15 +22,28 @@ const AccountPage = (props: Props) => {
             <main>
                 <NavBar />
                 <div className='p-4 flex flex-col items-center'>
-                    <div className='flex flex-col lg:flex-row gap-8 mb-8'>
-                        <button className='relative h-fit'>
-                            <div className='bg-gray-400 w-40 h-40 rounded-full' />
-                            <div className='absolute bottom-1 right-1 bg-secondary rounded-full p-2'>
-                                <IoCamera className='' size='2rem' />
+                    <div className='flex flex-col gap-8 mb-8'>
+                        <div className='flex items-center gap-4'>
+                            <button className='relative h-fit w-20'>
+                                <div className='bg-gray-400 w-20 h-20 rounded-full' />
+                                {/* <div className='absolute bottom-1 right-1 bg-secondary rounded-full p-2'>
+                                    <IoCamera className='' size='1.25rem' />
+                                </div> */}
+                            </button>
+                            <div className='flex flex-col'>
+                                <span className='text-primary text-lg'>John Doe</span>
+                                <button>
+                                    <span className='text-link font-bold hover:text-primary text-sm'>Change profile photo</span>
+                                </button>
                             </div>
-                        </button>
+                            <div className='flex flex-1 justify-end'>
+                                <button>
+                                    <IoSettingsOutline className='' size='1.5rem' />
+                                </button>
+                            </div>
+                        </div>
                         <div className='flex flex-col'>
-                            <div className='flex gap-4'>
+                            <div className='flex gap-4 md:w-auto flex-col md:flex-row'>
                                 <CommonInput
                                     placeholder='First Name'
                                 />
@@ -43,11 +52,14 @@ const AccountPage = (props: Props) => {
                                 />
                             </div>
                             <CommonInput
+                                placeholder='Email'
+                            />
+                            <CommonInput
                                 innerClass='h-40'
                                 placeholder='About Me'
                                 inputType='TextArea'
                             />
-                            <button className='bg-primary w-fit px-2 py-1 rounded-lg'>
+                            <button className='bg-primary w-fit px-4 py-1 mt-2 rounded-lg text-inverted'>
                                 Save Profile
                             </button>
                         </div>

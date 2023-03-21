@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model user {
+  userID  Int   @id @unique   @default(autoincrement())
+  tutorID tutor?     //user can have 0 or 1 relation to a tutor ID. All tutors are users, but not all users are tutors
+  email  String 
+  first_name  String
+  last_name   String
+  password    String
+  totalLearnHours  Int    @default(0)
+
+
+  appointments appointment[] //keeps track of appointments assigned to this user. 1:n relation
+  favorites user_favorites[] //for prisma to make the m:n relation
+}
+
+model tutor {
+  tutorID Int @id @default(autoincrement())
+  user_relation  user  @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID Int @unique  //This is the value in the DB
+  about_me String
+  totalTutorHours Int @default(0)
+
+
+  availability availability[] //keeps track of availability carried by this tutor. 1:n relation
+  appointments appointment[] //keeps track of appointments assigned to this tutor. 1:n relation
+  subjects tutors_subjects[] // for prisma to make the m:n relation
+  favorited user_favorites[] // for prisma to make the m:n relation
+}
+
+model subject {
+  subjectID Int @id @default(autoincrement())
+  name String
+  description String
+
+  tutors tutors_subjects[] // for prisma to make the m:n relation
+}
+
+model availability {
+  avail_relation tutor  @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID Int @unique  //this value exists in the DB
+  date String
+  startTime String
+  endTime String
+  repeatWeekly Boolean  // 0, do not repeat weekly. 1 do repeat each week
+}
+
+model appointment {
+  appointID Int @id @default(autoincrement())
+  tutor_relation tutor @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID Int //this value exists in the DB
+  user_relation user @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID Int //this value exists in the DB
+  startTimeStamp String
+  endTimeStamp String
+  date String
+}
+
+// m:n relation. Many tutors have many different subjects
+model tutors_subjects{  
+  tutor_relation    tutor     @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID        Int      
+  subject_relation  subject   @relation(fields: [fk_subjectID], references: [subjectID])  //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_subjectID      Int 
+
+  @@id([fk_tutorID, fk_subjectID]) //basically saying the unique id for this table is just the relations btwn the tutors and subjects
+}
+
+model user_favorites {
+  user_relation    user      @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID        Int      
+  tutor_relation   tutor     @relation(fields: [fk_tutorID], references: [fk_userID])  //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID       Int 
+
+  @@id([fk_userID, fk_tutorID]) //basically saying the unique id for this table is just the relations btwn the tutors and users
+}
+
+
+
+///Example
+
+// model User {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   email     String   @unique
+//   name      String?
+//   role      Role     @default(USER)
+//   posts     Post[]
+// }
+
+// model Post {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   published Boolean  @default(false)
+//   title     String   @db.VarChar(255)
+//   author    User?    @relation(fields: [authorId], references: [id])
+//   authorId  Int?
+// }
+
+// enum Role {
+//   USER
+//   ADMIN
+// }

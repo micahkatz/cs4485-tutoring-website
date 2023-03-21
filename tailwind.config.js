@@ -30,6 +30,8 @@ module.exports = {
                 // Custom text colors
                 primary: '#1A1A1A',
                 secondary: '#6B7280',
+                link: '#9748FF',
+                linkHover: '#AC6DFF',
                 inverted: '#F7F7F7',
             },
         },
