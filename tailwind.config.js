@@ -30,16 +30,17 @@ module.exports = {
                 // Custom text colors
                 primary: '#1A1A1A',
                 secondary: '#6B7280',
+                inverted: '#F7F7F7',
             },
         },
-    
-    maxWidth: {
-      '1': '100%',
-    },
 
-    maxHeight: {
-      '1': '100%',
+        maxWidth: {
+            1: '100%',
+        },
+
+        maxHeight: {
+            1: '100%',
+        },
     },
-  },
-  plugins: [],
-}
+    plugins: [],
+};

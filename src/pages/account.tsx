@@ -45,7 +45,7 @@ const AccountPage = (props: Props) => {
                             <CommonInput
                                 innerClass='h-40'
                                 placeholder='About Me'
-                                type='TextArea'
+                                inputType='TextArea'
                             />
                             <button className='bg-primary w-fit px-2 py-1 rounded-lg'>
                                 Save Profile
