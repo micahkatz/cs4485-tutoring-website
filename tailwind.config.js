@@ -33,15 +33,11 @@ module.exports = {
                 link: '#9748FF',
                 linkHover: '#AC6DFF',
                 inverted: '#F7F7F7',
-            },
-        },
-
-        maxWidth: {
-            1: '100%',
-        },
-
-        maxHeight: {
-            1: '100%',
+            },  
+            screens: {
+                'xs': '480px',
+                'xxs': '380px',
+            }
         },
     },
     plugins: [
