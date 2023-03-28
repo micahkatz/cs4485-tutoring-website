@@ -14,7 +14,7 @@ const TutorCard = (props: Props) => {
             {/*<div className='bg-layer01 w-40 h-40' />*/}
             <img src='fakeperson.webp' className='w-full object-cover aspect-square' />
             <p className='text-lg w-full text-primary'>Jane Doe</p>
-            <p className='text-sm w-full text-primary text-left'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere delectus, voluptates... {/*, iste in laboriosam tempora iure praesentium nemo dolor id accusamus totam aperiam dicta a provident accusantium obcaecati sapiente cumque.*/}</p>
+            <p className='text-sm w-full text-primary text-left line-clamp-2 md:line-clamp-3'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere delectus, voluptates iste in laboriosam tempora iure praesentium nemo dolor id accusamus totam aperiam dicta a provident accusantium obcaecati sapiente cumque.</p>
             <div className='w-full flex mt-2 gap-2 justify-between'>
                 <TagList />
                 <button>
