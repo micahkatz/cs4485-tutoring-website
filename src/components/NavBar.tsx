@@ -10,7 +10,7 @@ const NavBar = (props: Props) => {
                 <Link className="text-primary font-bold pl-10" href='/'>Tutor.io</Link>
                 <div className='flex gap-4 items-center'>
                     <Link className='text-primary' href='/'>Home</Link>
-                    <span className='text-primary'>My Appointments</span>
+                    <Link className='text-primary' href='/appointments'>My Appointments</Link>
                     <Link href='/account' className='w-10 h-10 rounded-full bg-placeholder flex items-center justify-center' >
                         {/* <span className='text-primary'>MK</span> */}
                     </Link>
