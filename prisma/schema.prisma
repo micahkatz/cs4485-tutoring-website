@@ -31,6 +31,7 @@ model tutor {
   fk_userID Int @unique  //This is the value in the DB
   about_me String
   totalTutorHours Int @default(0)
+  profile_picture String?
 
 
   availability availability[] //keeps track of availability carried by this tutor. 1:n relation
