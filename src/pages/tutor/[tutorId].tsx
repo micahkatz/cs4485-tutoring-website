@@ -6,37 +6,91 @@ import NavBar from '../../components/NavBar'
 import { useRouter } from 'next/router'
 import CommonTag from '@/components/tag/CommonTag'
 import TagList from '@/components/tag/TagList'
-import { tutorWithUserInfo } from '../api/tutor'
+import { tutor, user, subject, tutors_subjects } from '@prisma/client'
 
 type Props = {}
 
 const TutorPage = (props: Props) => {
-    const [tutorData, setTutorData] = React.useState<tutorWithUserInfo>()
+    const [tutorData, setTutorData] = React.useState<tutor>()
+    const [tutorUserData, setTutorUserData] = React.useState<user>()
+    const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[]>()
     const [isLoading, setLoading] = React.useState(true)
     const router = useRouter()
     const { tutorId } = router.query
 
-    useEffect(() => {
-        const fetchTutor = async () => {
-            await fetch('../../api/tutor/'+tutorId, {method: 'GET'})
+    const fetchTutorData = async () => {
+        await fetch('../../api/tutor/'+tutorId, {method: 'GET'})
+        .then((resp) => resp.json())
+        .then((json) => {
+            let result = json as tutor
+
+            // Fetch user data
+            fetchTutorUserData(result)
+
+            // Fetch subject data
+            fetchTutorSubjectData(result)
+
+            // Update data state
+            setTutorData(result)
+        })
+    }
+
+    const fetchTutorUserData = async (tut: tutor) => {
+        // Get tutor's user data
+        await fetch('../../api/user/' + tut.fk_userID, {method: 'GET'})
+        .then((resp) => resp.json())
+        .then((json) => {
+            // read json as user, return it
+            let result = json as user
+
+            // Update user data state
+            setTutorUserData(result)
+        })
+        .catch((error) => {
+            return
+        })
+    }
+
+    const fetchTutorSubjectData = async (tut: tutor) => {
+        // Get tutors subjects lists
+        let tutorsSubjects: tutors_subjects[] = []
+        await fetch('../../api/tutor/subjects/' + tut.tutorID, {method: 'GET'})
+        .then((resp) => resp.json())
+        .then((json) => {
+            // read json as tutor's subjects, return it
+            let result = json as tutors_subjects[]
+            tutorsSubjects = result
+        })
+        
+        // Get subjects lists
+        let subjects: subject[] = []
+        await Promise.all(tutorsSubjects.map(async (tut_sub:tutors_subjects) => {
+            await fetch('../../api/subject/' + tut_sub.fk_subjectID, {method: 'GET'})
             .then((resp) => resp.json())
             .then((json) => {
-            // Update data state
-            setTutorData(json)
-            
-            // Stop loading
-            setLoading(false)
+                // read json as subject, return it
+                let result = json as subject
+                subjects.push(result)
             })
-        }
-        fetchTutor()
-        console.log(tutorData)
-    })
+        }))
+
+        // Update subject state
+        setTutorSubjectData(subjects)
+            
+        // Stop loading
+        setLoading(false)
+    }
+    
+    useEffect(() => {
+        if(tutorId)
+            fetchTutorData()
+    }, [tutorId])
 
     if( isLoading ) {
         return <><h1>Loading...</h1></>
     }
 
-    if( tutorData == undefined ) {
+    if( tutorData == undefined || tutorUserData == undefined || tutorSubjectData == undefined ) {
         return <><h1>"Error Loading Page.</h1></>
     }
     else {
@@ -52,13 +106,15 @@ const TutorPage = (props: Props) => {
                     <NavBar />
                     <div className='p-4 flex flex-col items-center'>
                         <div className='flex flex-col lg:flex-row gap-8 mb-8'>
-                            <div className='bg-gray-400 w-40 h-40 rounded-full' />
+                            <img src='' alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({currentTarget}) => {
+                                // Replace with empty profile picture if src image dne
+                                currentTarget.onerror = null
+                                currentTarget.src='/emptyprofile.svg'
+                            }} />
                             <div>
-                                <span className='text-lg font-bold'>{tutorData.first_name + " " + tutorData.last_name}</span>
+                                <span className='text-lg font-bold'>{tutorUserData.first_name + " " + tutorUserData.last_name}</span>
                                 <p>{tutorData.about_me}</p>
-                                <TagList tags={tutorData.subjects.map((x) => {
-                                    return x.name
-                                })}
+                                <TagList tags={tutorSubjectData}
                                     className='mt-2'
                                 />
                                 <span>Tutor Id = {tutorId}</span>

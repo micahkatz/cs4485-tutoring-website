@@ -1,30 +1,30 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, tutor } from '@prisma/client';
+import { PrismaClient, Prisma, user } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<tutor | string | null>
+    res: NextApiResponse<user | string | null>
 ) {
-    const tutorIdString = req.query.tutorId as string;
+    const userIdString = req.query.userId as string;
 
-    const tutorId = parseInt(tutorIdString);
+    const userId = parseInt(userIdString);
     switch (req.method) {
         case 'GET':
             try {
-                const tutorResult = await prisma.tutor.findUnique({
+                const userResult = await prisma.user.findUnique({
                     where: {
-                        tutorID: tutorId,
+                        userID: userId,
                     },
                 });
-                if (!tutorResult) {
+                if (!userResult) {
                     res.status(404).send(
-                        `Could not find tutor with id ${tutorId}`
+                        `Could not find tutor with id ${userId}`
                     );
                 }
-                res.status(200).json(tutorResult);
+                res.status(200).json(userResult);
             } catch (err) {
                 res.status(500).send('Server Error');
             }

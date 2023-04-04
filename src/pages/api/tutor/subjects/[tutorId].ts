@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, tutor } from '@prisma/client';
+import { PrismaClient, Prisma, tutors_subjects } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<tutor | string | null>
+    res: NextApiResponse<tutors_subjects[] | string | null>
 ) {
     const tutorIdString = req.query.tutorId as string;
 
@@ -18,13 +18,18 @@ export default async function handler(
                     where: {
                         tutorID: tutorId,
                     },
+                    include: {
+                        subjects: true
+                    }
                 });
                 if (!tutorResult) {
                     res.status(404).send(
                         `Could not find tutor with id ${tutorId}`
                     );
+                    return
                 }
-                res.status(200).json(tutorResult);
+                let subjects = tutorResult.subjects
+                res.status(200).json(subjects);
             } catch (err) {
                 res.status(500).send('Server Error');
             }

@@ -1,19 +1,20 @@
 import React from 'react'
 import CommonTag from './CommonTag'
+import { subject } from '@prisma/client'
 
 type ClassType = React.HTMLAttributes<HTMLDivElement>['className']
 interface Props {
     className?: ClassType;
-    tags: string[]
+    tags: subject[]
 }
 
 const TagList = (props: Props) => {
-    const tags: string[] = props.tags
+    const tags: subject[] = props.tags
 
     return (
         <div className={`flex flex-wrap gap-2 ${props.className || ''}`}>
             {tags.map(tag => (
-                <CommonTag name={tag}/>
+                <CommonTag key={tag.subjectID} name={tag.name}/>
             ))}
         </div>
     )
