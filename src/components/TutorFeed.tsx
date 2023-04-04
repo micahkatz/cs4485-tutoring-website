@@ -2,11 +2,15 @@ import React, { useEffect } from 'react'
 import TutorCard from '../components/TutorCard'
 import { tutor, user, subject, tutors_subjects } from '@prisma/client'
 
+type TutorWithSubjects = tutor & {
+    subjects: tutors_subjects[];
+};
+
 type Props = {
 }
 
 const TutorFeed = (props: Props) => {
-    const [tutorData, setTutorData] = React.useState<tutor[]>()
+    const [tutorData, setTutorData] = React.useState<TutorWithSubjects[]>()
     const [tutorUserData, setTutorUserData] = React.useState<user[]>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[][]>()
     const [isLoading, setLoading] = React.useState(true)
@@ -16,7 +20,7 @@ const TutorFeed = (props: Props) => {
         .then((resp) => resp.json())
         .then((json) => {
             // read json as tutor array
-            const result = json as tutor[]
+            const result = json as TutorWithSubjects[]
             
             // Check if tutor data is not undefined
             if(result) {
@@ -52,25 +56,12 @@ const TutorFeed = (props: Props) => {
         setTutorUserData(usersList)
     }
 
-    const fetchTutorSubjectData = async (tutors: tutor[]) => {
-        // Get tutors subjects lists
-        let tutorsSubjects: tutors_subjects[][] = []
-        await Promise.all(tutors.map(async (tut: tutor) => {
-            await fetch('api/tutor/subjects/' + tut.tutorID, {method: 'GET'})
-            .then((resp) => resp.json())
-            .then((json) => {
-                // read json as tutor's subjects, return it
-                let result = json as tutors_subjects[]
-                tutorsSubjects.push(result)
-            })
-        }))
-        
+    const fetchTutorSubjectData = async (tutors: TutorWithSubjects[]) => {
         // Get subjects lists
         let subjectLists: subject[][] = []
-        await Promise.all(tutorsSubjects.map(async (tut_subs:tutors_subjects[]) => {
+        await Promise.all(tutors.map(async (tut:TutorWithSubjects) => {
             let subjects: subject[] = []
-
-            await Promise.all(tut_subs.map(async (tut_sub:tutors_subjects) => {
+            await Promise.all(tut.subjects.map(async (tut_sub:tutors_subjects) => {
                 await fetch('api/subject/' + tut_sub.fk_subjectID, {method: 'GET'})
                 .then((resp) => resp.json())
                 .then((json) => {

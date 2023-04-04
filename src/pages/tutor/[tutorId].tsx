@@ -10,6 +10,10 @@ import { tutor, user, subject, tutors_subjects } from '@prisma/client'
 
 type Props = {}
 
+type TutorWithSubjects = tutor & {
+    subjects: tutors_subjects[];
+};
+
 const TutorPage = (props: Props) => {
     const [tutorData, setTutorData] = React.useState<tutor>()
     const [tutorUserData, setTutorUserData] = React.useState<user>()
@@ -22,7 +26,7 @@ const TutorPage = (props: Props) => {
         await fetch('../../api/tutor/'+tutorId, {method: 'GET'})
         .then((resp) => resp.json())
         .then((json) => {
-            let result = json as tutor
+            let result = json as TutorWithSubjects
 
             // Fetch user data
             fetchTutorUserData(result)
@@ -51,20 +55,10 @@ const TutorPage = (props: Props) => {
         })
     }
 
-    const fetchTutorSubjectData = async (tut: tutor) => {
-        // Get tutors subjects lists
-        let tutorsSubjects: tutors_subjects[] = []
-        await fetch('../../api/tutor/subjects/' + tut.tutorID, {method: 'GET'})
-        .then((resp) => resp.json())
-        .then((json) => {
-            // read json as tutor's subjects, return it
-            let result = json as tutors_subjects[]
-            tutorsSubjects = result
-        })
-        
+    const fetchTutorSubjectData = async (tut: TutorWithSubjects) => {
         // Get subjects lists
         let subjects: subject[] = []
-        await Promise.all(tutorsSubjects.map(async (tut_sub:tutors_subjects) => {
+        await Promise.all(tut.subjects.map(async (tut_sub:tutors_subjects) => {
             await fetch('../../api/subject/' + tut_sub.fk_subjectID, {method: 'GET'})
             .then((resp) => resp.json())
             .then((json) => {
