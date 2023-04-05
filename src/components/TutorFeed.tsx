@@ -38,19 +38,33 @@ const TutorFeed = (props: Props) => {
 
     const fetchTutorUserData = async (tutors: tutor[]) => {
         // Get tutor's user data
-        let usersList: user[] = []
+        const map = new Map<number, user>()
         await Promise.all(tutors.map(async (tut: tutor) => {
             await fetch('api/user/' + tut.fk_userID, {method: 'GET'})
             .then((resp) => resp.json())
-            .then((json) => {
-                // read json as user, return it
-                let result = json as user
-                usersList.push(result)
+            .then((json) => json as user)
+            .then((result) => {
+                // Map userId to user
+                map.set(tut.fk_userID, result)
             })
             .catch((error) => {
                 return
             })
         }))
+
+        // Get mappings (likely out-of-order from time they were fetched)
+        let usersList: user[] = []
+        tutors.forEach( (tut: tutor) => {
+            // use tutor foreign key to put user data in array parallel to tutor data array
+            const u = map.get(tut.fk_userID)
+            if (u) {
+                usersList.push(u)
+            }
+            else {
+                console.log('error loading user')
+                console.log(u)
+            }
+        } )
 
         // Update user data state
         setTutorUserData(usersList)
@@ -58,20 +72,34 @@ const TutorFeed = (props: Props) => {
 
     const fetchTutorSubjectData = async (tutors: TutorWithSubjects[]) => {
         // Get subjects lists
-        let subjectLists: subject[][] = []
+        const map = new Map<number, subject[]>()
         await Promise.all(tutors.map(async (tut:TutorWithSubjects) => {
             let subjects: subject[] = []
             await Promise.all(tut.subjects.map(async (tut_sub:tutors_subjects) => {
                 await fetch('api/subject/' + tut_sub.fk_subjectID, {method: 'GET'})
                 .then((resp) => resp.json())
-                .then((json) => {
+                .then((json) => json as subject)
+                .then((result) => {
                     // read json as subject, return it
-                    let result = json as subject
                     subjects.push(result)
                 })
             }))
-            subjectLists.push(subjects)
+            map.set(tut.tutorID, subjects)
         }))
+
+        // Get mappings (likely out-of-order from time they were fetched)
+        let subjectLists: subject[][] = []
+        tutors.forEach( (tut: tutor) => {
+            // use tutor foreign key to put subject data in array parallel to tutor data array
+            const s = map.get(tut.tutorID)
+            if (s) {
+                subjectLists.push(s)
+            }
+            else {
+                console.log('error loading subjects')
+                console.log(s)
+            }
+        } )
 
         // Update subject state
         setTutorSubjectData(subjectLists)
