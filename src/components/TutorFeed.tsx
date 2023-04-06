@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Oval } from 'react-loader-spinner'
 import TutorCard from '../components/TutorCard'
 import { tutor, user, subject, tutors_subjects } from '@prisma/client'
 
@@ -14,6 +15,7 @@ const TutorFeed = (props: Props) => {
     const [tutorUserData, setTutorUserData] = React.useState<user[]>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[][]>()
     const [isLoading, setLoading] = React.useState(true)
+    const [loadError, setLoadError] = React.useState(false)
     
     const fetchTutorData = async () => {
         await fetch('api/tutor', {method: 'GET'})
@@ -34,6 +36,12 @@ const TutorFeed = (props: Props) => {
                 setTutorData(result)
             }
         })
+        .catch((error) => {
+            setLoadError(true)
+            setLoading(false)
+            console.log('error loading tutor data')
+            return
+        })
     }
 
     const fetchTutorUserData = async (tutors: tutor[]) => {
@@ -48,6 +56,9 @@ const TutorFeed = (props: Props) => {
                 map.set(tut.fk_userID, result)
             })
             .catch((error) => {
+                setLoadError(true)
+                setLoading(false)
+                console.log('error loading tutor\'s user data')
                 return
             })
         }))
@@ -83,6 +94,12 @@ const TutorFeed = (props: Props) => {
                     // read json as subject, return it
                     subjects.push(result)
                 })
+                .catch((error) => {
+                    setLoadError(true)
+                    setLoading(false)
+                    console.log('error loading tutor\'s subject data')
+                    return
+                }) 
             }))
             map.set(tut.tutorID, subjects)
         }))
@@ -113,12 +130,12 @@ const TutorFeed = (props: Props) => {
     }, [])
 
     if( isLoading ) {
-        return <><h1>Loading Tutors...</h1></>
+        return <div className='mt-6'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF'/></div>
     }
-    else if( tutorData == undefined || tutorUserData == undefined || tutorSubjectData == undefined ) {
-        return <><h1>Error Loading Tutor Feed.</h1></>
+    else if( loadError ) {
+        return <><span className='text-primary text-lg'>Error Loading Tutor Feed.</span></>
     }
-    else {
+    else if( tutorData && tutorUserData && tutorSubjectData ) {
         return (
             <div className='flex justify-center'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4 w-full sm:max-w-[75%] 2xl:max-w-[66%]'>
@@ -131,6 +148,9 @@ const TutorFeed = (props: Props) => {
                 </div>
             </div>
         )
+    }
+    else {
+        return <></>
     }
 }
 
