@@ -20,7 +20,7 @@ export default async function handler(
             try {
                 const tutorResult = await prisma.tutor.findUnique({
                     where: {
-                        tutorID: tutorId,
+                        fk_userID: tutorId,
                     },
                     include: {
                         subjects: true,

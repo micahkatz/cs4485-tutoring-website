@@ -26,7 +26,6 @@ model user {
 }
 
 model tutor {
-  tutorID Int @id @default(autoincrement())
   user_relation  user  @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
   fk_userID Int @unique  //This is the value in the DB
   about_me String

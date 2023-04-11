@@ -101,14 +101,14 @@ const TutorFeed = (props: Props) => {
                     return
                 }) 
             }))
-            map.set(tut.tutorID, subjects)
+            map.set(tut.fk_userID, subjects)
         }))
 
         // Get mappings (likely out-of-order from time they were fetched)
         let subjectLists: subject[][] = []
         tutors.forEach( (tut: tutor) => {
             // use tutor foreign key to put subject data in array parallel to tutor data array
-            const s = map.get(tut.tutorID)
+            const s = map.get(tut.fk_userID)
             if (s) {
                 subjectLists.push(s)
             }
