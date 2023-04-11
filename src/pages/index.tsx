@@ -6,7 +6,6 @@ import ActionPanel from '../components/ActionPanel'
 import TutorFeed from '../components/TutorFeed'
 import TutorCard from '@/components/TutorCard'
 import SearchBar from '@/components/SearchBar'
-import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
