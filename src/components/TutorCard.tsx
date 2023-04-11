@@ -19,7 +19,7 @@ const TutorCard = (props: Props) => {
     return (
         <Link
             className='border-secondary border-2 rounded-md p-2 m-2 w-auto h-auto hover:scale-105 transition-all'
-            href={'/tutor/'+ tutorData.tutorID}
+            href={'/tutor/'+ tutorData.fk_userID}
         >
             <div className='flex flex-col h-full justify-end'>
                 <img src='' alt='Image Not Found' className='w-full object-cover aspect-square' onError={({currentTarget}) => {
