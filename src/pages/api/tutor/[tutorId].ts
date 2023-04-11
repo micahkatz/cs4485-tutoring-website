@@ -33,6 +33,7 @@ export default async function handler(
                 }
                 res.status(200).json(tutorResult);
             } catch (err) {
+                console.error(err);
                 res.status(500).send('Server Error');
             }
             break;

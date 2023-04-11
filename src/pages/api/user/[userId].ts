@@ -8,15 +8,14 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<user | string | null>
 ) {
-    const userIDString = req.query.userID as string;
-
+    const userIDString = req.query.userId as string;
     const userID = parseInt(userIDString);
     switch (req.method) {
         case 'GET':
             try {
                 const userResult = await prisma.user.findUnique({
                     where: {
-                        userID
+                        userID,
                     },
                 });
                 if (!userResult) {
@@ -26,10 +25,10 @@ export default async function handler(
                 }
                 res.status(200).json(userResult);
             } catch (err) {
+                console.error(err);
                 res.status(500).send('Server Error');
             }
             break;
-        // case '':
         default:
             res.status(405).send('Invalid Request Method');
     }
