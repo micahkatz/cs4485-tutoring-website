@@ -23,10 +23,11 @@ export default async function handler(
                     res.status(404).send(
                         `Could not find subject with id ${subjectId}`
                     );
-                    return
+                    return;
                 }
                 res.status(200).json(subjectResult);
             } catch (err) {
+                console.error(err);
                 res.status(500).send('Server Error');
             }
             break;
