@@ -8,20 +8,20 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<user | string | null>
 ) {
-    const userIdString = req.query.userId as string;
+    const userIDString = req.query.userID as string;
 
-    const userId = parseInt(userIdString);
+    const userID = parseInt(userIDString);
     switch (req.method) {
         case 'GET':
             try {
                 const userResult = await prisma.user.findUnique({
                     where: {
-                        userID: userId,
+                        userID
                     },
                 });
                 if (!userResult) {
                     res.status(404).send(
-                        `Could not find tutor with id ${userId}`
+                        `Could not find a user with id ${userID}`
                     );
                 }
                 res.status(200).json(userResult);
@@ -29,6 +29,7 @@ export default async function handler(
                 res.status(500).send('Server Error');
             }
             break;
+        // case '':
         default:
             res.status(405).send('Invalid Request Method');
     }
