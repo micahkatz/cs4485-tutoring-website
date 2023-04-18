@@ -1,55 +1,57 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, user } from '@prisma/client';
+import { PrismaClient, Prisma, appointment } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<user | string | null>
+    res: NextApiResponse<appointment | string | null>
 ) {
-    const userIDString = req.query.userId as string;
-    const userID = parseInt(userIDString);
+    const appointIdString = req.query.appointId as string;
+
+    const appointmentId = parseInt(appointIdString);
     switch (req.method) {
-        case 'GET':  // Get User based on ID
+        case 'GET':
             try {
-                const userResult = await prisma.user.findUnique({
+                const appointResult = await prisma.appointment.findUnique({
                     where: {
-                        userID,
+                        appointID: appointmentId,
                     },
                 });
-                if (!userResult) {
+                if (!appointResult) {
                     res.status(404).send(
-                        `Could not find a user with id ${userID}`
+                        `Could not find subject with id ${appointmentId}`
                     );
+                    return;
                 }
-                res.status(200).json(userResult);
+                res.status(200).json(appointResult);
             } catch (err) {
                 console.error(err);
                 res.status(500).send('Server Error');
             }
             break;
-        case 'DELETE': // Delete a User based on given ID
+        case 'DELETE': // Delete an appointment based on given ID
             try {
-                const userResult = await prisma.user.findUnique({
+                const appointResult = await prisma.appointment.findUnique({
                     where: {
-                        userID,
+                        appointID: appointmentId,
                     },
                 });
-                if (!userResult) {
+                if (!appointResult) {
                     res.status(404).send(
-                        `Could not find a user with id ${userID}`
+                        `Could not find subject with id ${appointmentId}`
                     );
+                    return;
                 }
-                await prisma.user.delete({
+                await prisma.appointment.delete({
                     where: {
-                        userID,
-                    },
+                        appointID: appointmentId,
+                    }
                 })
                 // send success
                 res.status(200).end("Success");
-            } 
-            catch (err) {
+            } catch (err) {
                 console.error(err);
                 res.status(500).send('Server Error');
             }
