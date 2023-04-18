@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, tutor, user } from '@prisma/client';
+import { PrismaClient, Prisma, appointment } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -10,12 +10,12 @@ export default async function handler(
 ) {
     switch (req.method) {
         case 'POST': // POST is create new
-            const body = req.body as user;
+            const body = req.body as appointment;
 
             try {
-                const { userID, ...withoutId } = body;
+                const { appointID, ...withoutId } = body;
 
-                const createResponse = await prisma.user.create({
+                const createResponse = await prisma.appointment.create({
                     data: withoutId,
                 });
 
@@ -27,19 +27,19 @@ export default async function handler(
 
             break;
         case 'PUT': // PUT is update
-            const partialBody = req.body as Partial<user>;
+            const partialBody = req.body as Partial<appointment>;
 
-            if (!partialBody.userID) {
-                res.status(400).send('Missing user ID');
+            if (!partialBody.appointID) {
+                res.status(400).send('Missing appointment ID');
                 break;
             }
 
             try {
-                const { userID, ...withoutId } = partialBody;
+                const { appointID, ...withoutId } = partialBody;
 
-                const updateResponse = await prisma.user.update({
+                const updateResponse = await prisma.appointment.update({
                     where: {
-                        userID,
+                        appointID,
                     },
                     data: withoutId,
                 });
@@ -50,6 +50,15 @@ export default async function handler(
                 res.status(500).send('Server Error');
             }
 
+            break;
+        case 'GET': // Getting all appointments
+            const { tutorId } = req.body;
+            const allAppoints = await prisma.appointment.findMany({
+                where: {
+                    fk_tutorID: tutorId,
+                },
+            });
+            res.status(200).json(allAppoints);
             break;
         default:
             res.status(405).send('Invalid Request Method');

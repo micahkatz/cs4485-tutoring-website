@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, tutor, user } from '@prisma/client';
+import { PrismaClient, Prisma, availability } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -10,13 +10,11 @@ export default async function handler(
 ) {
     switch (req.method) {
         case 'POST': // POST is create new
-            const body = req.body as user;
+            const body = req.body as availability;
 
             try {
-                const { userID, ...withoutId } = body;
-
-                const createResponse = await prisma.user.create({
-                    data: withoutId,
+                const createResponse = await prisma.availability.create({
+                    data: body,
                 });
 
                 res.status(200).json(createResponse);
@@ -27,19 +25,19 @@ export default async function handler(
 
             break;
         case 'PUT': // PUT is update
-            const partialBody = req.body as Partial<user>;
+            const partialBody = req.body as Partial<availability>;
 
-            if (!partialBody.userID) {
-                res.status(400).send('Missing user ID');
+            if (!partialBody.fk_tutorID) {
+                res.status(400).send('Missing a tutor ID');
                 break;
             }
 
             try {
-                const { userID, ...withoutId } = partialBody;
+                const { fk_tutorID, ...withoutId } = partialBody;
 
-                const updateResponse = await prisma.user.update({
+                const updateResponse = await prisma.availability.update({
                     where: {
-                        userID,
+                        fk_tutorID,
                     },
                     data: withoutId,
                 });
