@@ -7,6 +7,12 @@ import { useRouter } from 'next/router'
 import CommonTag from '@/components/tag/CommonTag'
 import TagList from '@/components/tag/TagList'
 import { tutor, user, subject, tutors_subjects } from '@prisma/client'
+import Calendar from 'react-calendar';
+
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
+import { LooseValue } from 'react-datetime-picker/dist/cjs/shared/types'
 
 type Props = {}
 
@@ -14,77 +20,78 @@ type TutorWithSubjects = tutor & {
     subjects: tutors_subjects[];
 };
 
-const TutorPage = (props: Props) => {
+const TutorPage = () => {
     const [tutorData, setTutorData] = React.useState<tutor>()
     const [tutorUserData, setTutorUserData] = React.useState<user>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[]>()
     const [isLoading, setLoading] = React.useState(true)
     const router = useRouter()
     const { tutorId } = router.query
+    const [chosenDateTime, setChosenDateTime] = React.useState<LooseValue | undefined>(new Date());
 
     const fetchTutorData = async () => {
-        await fetch('../../api/tutor/'+tutorId, {method: 'GET'})
-        .then((resp) => resp.json())
-        .then((json) => {
-            let result = json as TutorWithSubjects
+        await fetch('../../api/tutor/' + tutorId, { method: 'GET' })
+            .then((resp) => resp.json())
+            .then((json) => {
+                let result = json as TutorWithSubjects
 
-            // Fetch user data
-            fetchTutorUserData(result)
+                // Fetch user data
+                fetchTutorUserData(result)
 
-            // Fetch subject data
-            fetchTutorSubjectData(result)
+                // Fetch subject data
+                fetchTutorSubjectData(result)
 
-            // Update data state
-            setTutorData(result)
-        })
+                // Update data state
+                setTutorData(result)
+            })
     }
 
     const fetchTutorUserData = async (tut: tutor) => {
         // Get tutor's user data
-        await fetch('../../api/user/' + tut.fk_userID, {method: 'GET'})
-        .then((resp) => resp.json())
-        .then((json) => {
-            // read json as user, return it
-            let result = json as user
+        await fetch('../../api/user/' + tut.fk_userID, { method: 'GET' })
+            .then((resp) => resp.json())
+            .then((json) => {
+                // read json as user, return it
+                let result = json as user
 
-            // Update user data state
-            setTutorUserData(result)
-        })
-        .catch((error) => {
-            return
-        })
+                // Update user data state
+                setTutorUserData(result)
+            })
+            .catch((error) => {
+                return
+            })
     }
 
     const fetchTutorSubjectData = async (tut: TutorWithSubjects) => {
         // Get subjects lists
         let subjects: subject[] = []
-        await Promise.all(tut.subjects.map(async (tut_sub:tutors_subjects) => {
-            await fetch('../../api/subject/' + tut_sub.fk_subjectID, {method: 'GET'})
-            .then((resp) => resp.json())
-            .then((json) => {
-                // read json as subject, return it
-                let result = json as subject
-                subjects.push(result)
-            })
+        await Promise.all(tut.subjects.map(async (tut_sub: tutors_subjects) => {
+            await fetch('../../api/subject/' + tut_sub.fk_subjectID, { method: 'GET' })
+                .then((resp) => resp.json())
+                .then((json) => {
+                    // read json as subject, return it
+                    let result = json as subject
+                    subjects.push(result)
+                })
         }))
 
         // Update subject state
         setTutorSubjectData(subjects)
-            
+
         // Stop loading
         setLoading(false)
     }
-    
+
     useEffect(() => {
-        if(tutorId)
+        if (tutorId)
             fetchTutorData()
     }, [tutorId])
 
-    if( isLoading ) {
+    if (isLoading) {
         return <><h1>Loading...</h1></>
     }
 
-    if( tutorData == undefined || tutorUserData == undefined || tutorSubjectData == undefined ) {
+    if (tutorData == undefined || tutorUserData == undefined || tutorSubjectData == undefined) {
         return <><h1>"Error Loading Page.</h1></>
     }
     else {
@@ -100,10 +107,10 @@ const TutorPage = (props: Props) => {
                     <NavBar />
                     <div className='p-4 flex flex-col items-center'>
                         <div className='flex flex-col lg:flex-row gap-8 mb-8'>
-                            <img src='' alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({currentTarget}) => {
+                            <img src='' alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({ currentTarget }) => {
                                 // Replace with empty profile picture if src image dne
                                 currentTarget.onerror = null
-                                currentTarget.src='/emptyprofile.svg'
+                                currentTarget.src = '/emptyprofile.svg'
                             }} />
                             <div>
                                 <span className='text-lg font-bold'>{tutorUserData.first_name + " " + tutorUserData.last_name}</span>
@@ -114,9 +121,14 @@ const TutorPage = (props: Props) => {
                                 <span>Tutor Id = {tutorId}</span>
                             </div>
                         </div>
-                        <div className='w-full h-80 bg-gray-400 flex items-center justify-center'>
-                            <span>Calendar</span>
-                        </div>
+                        <Calendar onChange={(val) => setChosenDateTime(val)} value={chosenDateTime}
+                            tileContent={(tileArgs) => (
+                                <p>
+                                    {(tileArgs.date.toDateString() === (new Date()).toDateString()) ? '•••' : ''}
+                                </p>
+                            )} />
+                        {/* <div className='w-full h-80 bg-gray-400 flex items-center justify-center'>
+                        </div> */}
                     </div>
                 </main>
             </>
