@@ -52,8 +52,11 @@ export default async function handler(
 
             break;
         case 'GET': // Getting all appointments
+            const { tutorId } = req.body;
             const allAppoints = await prisma.appointment.findMany({
-               // put stuff in here?
+                where: {
+                    fk_tutorID: tutorId,
+                },
             });
             res.status(200).json(allAppoints);
             break;
