@@ -1,3 +1,4 @@
+import React from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
@@ -6,10 +7,16 @@ import ActionPanel from '../components/ActionPanel'
 import TutorFeed from '../components/TutorFeed'
 import TutorCard from '@/components/TutorCard'
 import SearchBar from '@/components/SearchBar'
+import { subject } from '@prisma/client'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const [nameFilter, setNameFilter] = React.useState<string>("")
+  const [subjectFilter, setSubjectFilter] = React.useState<string>("")
+  const [dayFilter, setDayFilter] = React.useState<Date>()
+  const [hoursFilter, setHoursFilter] = React.useState<Date>()
+
   return (
     <>
       <Head>
@@ -22,8 +29,8 @@ export default function Home() {
         <NavBar />
         <ActionPanel />
         <div className='p-4 flex flex-col items-center'>
-          <SearchBar />
-          <TutorFeed />
+          <SearchBar setName={setNameFilter} setSubject={setSubjectFilter} setDay={setDayFilter} setHours={setHoursFilter}/>
+          <TutorFeed filterName={nameFilter} filterSubject={subjectFilter} filterDay={dayFilter} filterHours={hoursFilter}/>
         </div>
       </main>
     </>
