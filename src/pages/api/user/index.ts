@@ -9,7 +9,7 @@ export default async function handler(
     res: NextApiResponse<any | string>
 ) {
     switch (req.method) {
-        case 'PUT': // to update a user
+        case 'POST': // POST is create new
             const body = req.body as user;
 
             try {
@@ -26,7 +26,7 @@ export default async function handler(
             }
 
             break;
-        case 'POST': // to update a user
+        case 'PUT': // PUT is update
             const partialBody = req.body as Partial<user>;
 
             if (!partialBody.userID) {
