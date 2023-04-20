@@ -29,7 +29,7 @@ export default function Home() {
         <NavBar />
         <ActionPanel />
         <div className='p-4 flex flex-col items-center'>
-          <SearchBar setName={setNameFilter} setSubject={setSubjectFilter} setDay={setDayFilter} setHours={setHoursFilter}/>
+          <SearchBar setName={setNameFilter} subject={subjectFilter} setSubject={setSubjectFilter} day={dayFilter} setDay={setDayFilter} hours={hoursFilter} setHours={setHoursFilter}/>
           <TutorFeed filterName={nameFilter} filterSubject={subjectFilter} filterDay={dayFilter} filterHours={hoursFilter}/>
         </div>
       </main>

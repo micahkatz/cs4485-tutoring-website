@@ -148,22 +148,56 @@ const TutorFeed = (props: Props) => {
         }
 
         let indexes = []
+        let blacklist = []
 
         // Parse filters
         /// Name
         for(let i = 0; i < tutorUserData.length; i++) {
             let name = (tutorUserData[i].first_name.toLowerCase() + " " + tutorUserData[i].last_name.toLowerCase())
             if( name.indexOf(nameFilter.toLowerCase()) != -1 ) {
-                indexes.push(i)
+                indexes.push(i) // NOTE: everything will be pushed if nameFilter is empty (empty value: '')
             }
-            else {
+            else { 
                 if( indexes.indexOf(i) != -1 ) {
                     indexes.splice(indexes.indexOf(i), 1)
                 }
+                blacklist.push(i)
             }
         }
 
         /// Subject
+        if(subjectFilter != '') {
+            for(let i = 0; i < tutorSubjectData.length; i++) {
+                let subjects = tutorSubjectData[i]
+                // If tutor has subjects
+                if( subjects.length > 0 ) {
+                    for(let j = 0; j < subjects.length; j++) {
+                        if( subjects[j].name == subjectFilter ) {
+                            // Subject matches, break
+                            if( indexes.indexOf(i) == -1 && blacklist.indexOf(i) == -1 )
+                                // Add to display indexes since it's not already there
+                                indexes.push(i)
+                            break
+                        }
+                        else {
+                            if( indexes.indexOf(i) != -1 ) {
+                                // Subject doesn't match, remove from display indexes
+                                indexes.splice(indexes.indexOf(i), 1)
+                            }
+
+                            // Add to blacklist if not already there
+                            if( blacklist.indexOf(i) != -1 )
+                                blacklist.push(i)
+                        }
+                    }
+                }
+                // If tutor has no subjects
+                else if( indexes.indexOf(i) != -1 ) {
+                    // Remove from display indexes if there already
+                    indexes.splice(indexes.indexOf(i), 1)
+                }
+            }
+        }
         
         /// Day
 
