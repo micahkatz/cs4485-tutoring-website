@@ -20,7 +20,7 @@ type TutorWithSubjects = tutor & {
     subjects: tutors_subjects[];
 };
 
-const TutorPage = () => {
+const TutorPage = (props) => {
     const [tutorData, setTutorData] = React.useState<tutor>()
     const [tutorUserData, setTutorUserData] = React.useState<user>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[]>()
@@ -118,7 +118,6 @@ const TutorPage = () => {
                                 <TagList tags={tutorSubjectData}
                                     className='mt-2'
                                 />
-                                <span>Tutor Id = {tutorId}</span>
                             </div>
                         </div>
                         <Calendar onChange={(val) => setChosenDateTime(val)} value={chosenDateTime}
