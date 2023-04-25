@@ -6,10 +6,11 @@ import ActionPanel from '../components/ActionPanel'
 import TutorFeed from '../components/TutorFeed'
 import TutorCard from '@/components/TutorCard'
 import SearchBar from '@/components/SearchBar'
+import UserContext from '@/context/userContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function Home(props) {
   return (
     <>
       <Head>
