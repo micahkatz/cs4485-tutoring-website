@@ -2,13 +2,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient, Prisma, tutor, user } from '@prisma/client';
 import { UserWithoutPassword } from '@/types/globals';
-
+import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient();
+
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<UserWithoutPassword | string>
 ) {
+    const isPasswordCorrect = async (password: string, storedPassword: string) => {
+        console.log('comparing passwords', { password, storedPassword })
+        const result = await bcrypt.compare(password, storedPassword) as boolean
+
+        console.log('result of comparing passwords', result)
+        return result
+    }
     switch (req.method) {
         case 'POST':
             type GetReqType = {
@@ -25,17 +33,23 @@ export default async function handler(
                 const userResult = await prisma.user.findFirst({
                     where: {
                         email,
-                        password,
                     },
                 });
+
                 if (!userResult) {
                     res.status(404).send(
                         `Could not find a user with email ${email}`
                     );
                 }
+                console.log('calling isPasswordCorrect', userResult, body)
+                const hasCorrectPassword = await isPasswordCorrect(password, userResult.password,)
+                if (hasCorrectPassword) {
+                    const { password: resultPass, ...withoutPassword } = userResult
+                    res.status(200).json(withoutPassword);
+                } else {
+                    res.status(401).send('Invalid Username or Password')
+                }
 
-                const { password: resultPass, ...withoutPassword } = userResult
-                res.status(200).json(withoutPassword);
             } catch (error) {
                 console.error(error);
                 res.status(500).send('Server Error');
