@@ -15,7 +15,7 @@ export default function Home() {
   const [nameFilter, setNameFilter] = React.useState<string>("")
   const [subjectFilter, setSubjectFilter] = React.useState<string>("")
   const [dayFilter, setDayFilter] = React.useState<Date>()
-  const [hoursFilter, setHoursFilter] = React.useState<Date>()
+  const [hourFilter, setHourFilter] = React.useState<Date>()
 
   return (
     <>
@@ -29,8 +29,8 @@ export default function Home() {
         <NavBar />
         <ActionPanel />
         <div className='p-4 flex flex-col items-center'>
-          <SearchBar setName={setNameFilter} subject={subjectFilter} setSubject={setSubjectFilter} day={dayFilter} setDay={setDayFilter} hours={hoursFilter} setHours={setHoursFilter}/>
-          <TutorFeed filterName={nameFilter} filterSubject={subjectFilter} filterDay={dayFilter} filterHours={hoursFilter}/>
+          <SearchBar setName={setNameFilter} subject={subjectFilter} setSubject={setSubjectFilter} day={dayFilter} setDay={setDayFilter} hour={hourFilter} setHour={setHourFilter}/>
+          <TutorFeed filterName={nameFilter} filterSubject={subjectFilter} filterDay={dayFilter} filterHour={hourFilter}/>
         </div>
       </main>
     </>
