@@ -29,6 +29,8 @@ const LoginPage = (props) => {
     } else if (res.user) {
       setErrorText('')
       console.log(res.user)
+      const returnUrl = router.query?.returnUrl as string
+      returnUrl ? router.push(returnUrl) : router.push('/')
     }
   }
 
