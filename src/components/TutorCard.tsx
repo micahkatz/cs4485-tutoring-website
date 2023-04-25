@@ -15,6 +15,24 @@ const TutorCard = (props: Props) => {
     const [tutorData, setTutorData] = React.useState<tutor>(props.tutor)
     const [userData, setUserData] = React.useState<user>(props.user)
     const [subjectData, setSubjectData] = React.useState<subject[]>(props.subjects)
+    const [hoveringBookmark, setHoveringBookmark] = React.useState<boolean>(false)
+    const [favorite, setFavorite] = React.useState<boolean>(false)
+
+    const hoveringEventOn = (event: React.MouseEvent<HTMLElement>) => {
+        setHoveringBookmark(true)
+    }
+
+    const hoveringEventOff = (event: React.MouseEvent<HTMLElement>) => {
+        setHoveringBookmark(false)
+    }
+
+    const bookmarkToggleEvent = (event: React.MouseEvent<HTMLElement>) => {
+        // Toggle favorite
+        setFavorite(!favorite)
+
+        // Update user favorites in database
+        /// CODE GOES HERE
+    }
 
     return (
         <Link
@@ -33,9 +51,9 @@ const TutorCard = (props: Props) => {
                 </p>
                 <div className='w-full flex mt-2 gap-2 justify-between'>
                     <TagList tags={subjectData} />
-                    <button>
-                        <IoBookmarkOutline size='2rem' className='' />
-                    </button>
+                    <Link href='' onMouseEnter={hoveringEventOn} onMouseLeave={hoveringEventOff} onClick={bookmarkToggleEvent} >
+                        {(hoveringBookmark || favorite) && <IoBookmark size='2rem' className='' /> || <IoBookmarkOutline size='2rem' className='' />}
+                    </Link>
                 </div>
             </div>
         </Link>
