@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
@@ -12,10 +12,12 @@ import { ReactEventHandler } from 'react'
 import { ChangeEventHandler } from 'react'
 import { ChangeEvent } from 'react'
 import { user } from '@prisma/client'
+import { NewUserType } from '@/types/globals'
+import { UserContext } from '@/context/userContext'
 
 type Props = {}
 
-const SignupPage = (props: Props) => {
+const SignupPage = (props) => {
   const router = useRouter()
   const { tutorId } = router.query
   const [firstName, setFirstName] = React.useState("")
@@ -24,13 +26,13 @@ const SignupPage = (props: Props) => {
   const [password, setPassword] = React.useState("")
   const [errorMessage, setErrorMessage] = React.useState("")
   const emailRegex = RegExp("^[A-Za-z0-9.]+@[A-Za-z.]+.[A-Za-z]+$")
+  const userContext = useContext(UserContext)
 
-  const SignUp = async () => {
+  const handleSignUp = async () => {
     // Validate entries
-    if( entriesValid() ) {
+    if (entriesValid()) {
       // Create user object
-      let newUser: user = {
-        userID: 0,
+      let newUser: NewUserType = {
         first_name: firstName,
         last_name: lastName,
         email: email,
@@ -38,27 +40,16 @@ const SignupPage = (props: Props) => {
         totalLearnHours: 0
       }
 
-      // Send POST request
-      await fetch('api/user', {
-        method: 'POST', 
-        headers: {'Content-Type': 'application/json'},
-        body:JSON.stringify(newUser)
-      })
-        .then((resp) => resp.json())
-        .then((json) => {
-            // read json as user
-            const result = json as user
-            
-            // log user data
-            console.log(result)
-            
-            // Redirect to main page
-            window.location.replace("../")
-        })
-        .catch((error) => {
-            setErrorMessage("Error creating user account.\nMessage: " + error.message)
-            return
-        })
+      try {
+
+        const response = await userContext.signup(newUser)
+        if (response.error) {
+          setErrorMessage(response.error.msg)
+        }
+      } catch (err) {
+        setErrorMessage('There was an error signing up')
+
+      }
     }
   }
 
@@ -70,25 +61,25 @@ const SignupPage = (props: Props) => {
     setErrorMessage("")
 
     // Entries filled out
-    if( first == '' || last == '' || em == '' || pw == '' ) {
+    if (first == '' || last == '' || em == '' || pw == '') {
       setErrorMessage("Please fill out all requested information first.")
       return false
     }
 
     // First/Last Name
-    if( first.indexOf(' ') != -1 || last.indexOf(' ') != -1 ) {
+    if (first.indexOf(' ') != -1 || last.indexOf(' ') != -1) {
       setErrorMessage("First/Last name must be a single word.")
       return false
     }
 
     // Email
-    if( !emailRegex.test(em) ){
+    if (!emailRegex.test(em)) {
       setErrorMessage("Invalid email format. Please enter a real email.")
       return false
     }
 
     // Password
-    if( password.length < 8 ) {
+    if (password.length < 8) {
       setErrorMessage("Password is too short. Must be longer than 8 characters.")
       return false
     }
@@ -144,7 +135,7 @@ const SignupPage = (props: Props) => {
               placeholder='Password'
               type='password'
             />
-            <button className='bg-primary w-fit px-4 py-1 mt-2 text-inverted rounded-lg' onClick={SignUp}>
+            <button className='bg-primary w-fit px-4 py-1 mt-2 text-inverted rounded-lg' onClick={handleSignUp}>
               Create Account
             </button>
             <span className='text-red-500 text-lg flex mt-6 justify-center w-full'>{errorMessage}</span>

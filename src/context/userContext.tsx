@@ -1,4 +1,4 @@
-import { UserWithoutPassword } from '@/types/globals';
+import { NewUserType, UserWithoutPassword } from '@/types/globals';
 import { user } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
@@ -8,7 +8,8 @@ type LoginReturnType = {
     error?: CustomErrorMsg
 }
 type UserContextType = {
-    login: (email: string, password: string) => Promise<LoginReturnType>
+    login: (email: string, password: string) => Promise<LoginReturnType>,
+    signup: (newUser: NewUserType) => Promise<LoginReturnType>,
 }
 export const UserContext = React.createContext<UserContextType | null>(null);
 type Props = {
@@ -67,6 +68,29 @@ export default (props: Props) => {
             }
         }
     }
+    const signup = async (newUser: NewUserType) => {
+        try {
+            console.log('getting user from db')
+            const resultingUser = await axios.post('/api/user', {
+                ...newUser,
+                password: await encryptPassword(newUser.password)
+            }) as user
+            setCurrUser(resultingUser)
+
+            // window.location.replace('/')
+
+            return { user: resultingUser }
+        } catch (err) {
+            const axiosErr = err as AxiosError
+            console.error(err)
+
+            return {
+                error: {
+                    msg: 'There was an error signing up'
+                }
+            }
+        }
+    }
 
     React.useEffect(() => {
         setIsLoggedIn(currUser !== null)
@@ -74,6 +98,7 @@ export default (props: Props) => {
 
     const store = {
         login,
+        signup,
         currUser
     };
 

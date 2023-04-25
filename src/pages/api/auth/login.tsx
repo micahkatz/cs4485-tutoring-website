@@ -11,10 +11,8 @@ export default async function handler(
     res: NextApiResponse<UserWithoutPassword | string>
 ) {
     const isPasswordCorrect = async (password: string, storedPassword: string) => {
-        console.log('comparing passwords', { password, storedPassword })
         const result = await bcrypt.compare(password, storedPassword) as boolean
 
-        console.log('result of comparing passwords', result)
         return result
     }
     switch (req.method) {
@@ -37,17 +35,18 @@ export default async function handler(
                 });
 
                 if (!userResult) {
-                    res.status(404).send(
-                        `Could not find a user with email ${email}`
+                    res.status(5).send(
+                        `Could not  ${email}`
                     );
-                }
-                console.log('calling isPasswordCorrect', userResult, body)
-                const hasCorrectPassword = await isPasswordCorrect(password, userResult.password,)
-                if (hasCorrectPassword) {
-                    const { password: resultPass, ...withoutPassword } = userResult
-                    res.status(200).json(withoutPassword);
                 } else {
-                    res.status(401).send('Invalid Username or Password')
+                    console.log('calling isPasswordCorrect', userResult, body)
+                    const hasCorrectPassword = await isPasswordCorrect(password, userResult.password,)
+                    if (hasCorrectPassword) {
+                        const { password: resultPass, ...withoutPassword } = userResult
+                        res.status(200).json(withoutPassword);
+                    } else {
+                        res.status(401).send('Invalid Username or Password')
+                    }
                 }
 
             } catch (error) {
