@@ -48,11 +48,12 @@ model subject {
 }
 
 model availability {
+  availID Int @id @default(autoincrement())
   avail_relation tutor  @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_tutorID Int @unique  //this value exists in the DB
-  date String
-  startTime String
-  endTime String
+  fk_tutorID Int  //this value exists in the DB
+  
+  startDT DateTime
+  endDT DateTime
   repeatWeekly Boolean  // 0, do not repeat weekly. 1 do repeat each week
 }
 
@@ -62,9 +63,9 @@ model appointment {
   fk_tutorID Int //this value exists in the DB
   user_relation user @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
   fk_userID Int //this value exists in the DB
-  startTimeStamp String
-  endTimeStamp String
-  date String
+
+  startDT DateTime
+  endDT DateTime
 }
 
 // m:n relation. Many tutors have many different subjects
