@@ -13,6 +13,10 @@ type LoginReturnType = {
 type UserContextType = {
     login: (email: string, password: string) => Promise<LoginReturnType>,
     signup: (newUser: NewUserType) => Promise<LoginReturnType>,
+    logout: () => void,
+    currUser: UserWithoutPassword | null,
+    isLoggedIn: boolean,
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
 }
 export const UserContext = React.createContext<UserContextType | null>(null);
 type Props = {
@@ -45,6 +49,7 @@ export default (props: Props) => {
                 password
             }) as user
             setCurrUser(resultingUser)
+            setIsLoggedIn(true)
 
             // window.location.replace('/')
 
@@ -81,13 +86,20 @@ export default (props: Props) => {
                 password: await encryptPassword(newUser.password)
             }) as user
             setCurrUser(resultingUser)
-
-            // window.location.replace('/')
+            setIsLoggedIn(true)
 
             return { user: resultingUser }
         } catch (err) {
             const axiosErr = err as AxiosError
             console.error(err)
+
+            if (axiosErr.response.status === 409) {
+                return {
+                    error: {
+                        msg: 'An account already exists with that email address'
+                    }
+                }
+            }
 
             return {
                 error: {
@@ -97,51 +109,21 @@ export default (props: Props) => {
         }
     }
 
-    const authCheck = (url: string) => {
-        // redirect to login page if accessing a private page and not logged in 
-        const publicPaths = ['/login'];
-        const path = url.split('?')[0];
-        if (!currUser && !publicPaths.includes(path)) {
-            setIsLoggedIn(false);
-            router.push({
-                pathname: '/login',
-                query: { returnUrl: router.asPath }
-            });
-        } else {
-            setIsLoggedIn(true);
-        }
+    const logout = () => {
+        setCurrUser(null)
+        setIsLoggedIn(false)
+
+        router.push('/login')
     }
-
-
-    React.useEffect(() => {
-        setIsLoggedIn(currUser !== null)
-    }, [currUser])
-
-    React.useEffect(() => {
-        // on initial load - run auth check 
-        authCheck(router.asPath);
-
-        // on route change start - hide page content by setting authorized to false  
-        const hideContent = () => setIsLoggedIn(false);
-        router.events.on('routeChangeStart', hideContent);
-
-        // on route change complete - run auth check 
-        router.events.on('routeChangeComplete', authCheck)
-
-        // unsubscribe from events in useEffect return function
-        return () => {
-            router.events.off('routeChangeStart', hideContent);
-            router.events.off('routeChangeComplete', authCheck);
-        }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
 
     const store = {
         login,
         signup,
-        currUser
+        currUser,
+        logout,
+        setIsLoggedIn,
+        isLoggedIn
     };
 
     return (

@@ -16,17 +16,27 @@ export default async function handler(
             try {
                 const { userID, ...withoutId } = body;
 
-                const createResponse = await prisma.user.create({
-                    data: withoutId,
+                const foundUser = await prisma.user.findFirst({
+                    where: {
+                        email: body.email,
+                    },
                 });
 
-                if (!createResponse) {
-                    res.status(500).send(`Could not sign up`);
-                } else {
-                    const { password: resultPass, ...withoutPassword } =
-                        createResponse;
+                if (!foundUser) {
+                    const createResponse = await prisma.user.create({
+                        data: withoutId,
+                    });
 
-                    res.status(200).json(withoutPassword);
+                    if (!createResponse) {
+                        res.status(500).send(`Could not sign up`);
+                    } else {
+                        const { password: resultPass, ...withoutPassword } =
+                            createResponse;
+
+                        res.status(200).json(withoutPassword);
+                    }
+                } else {
+                    res.status(409).send('User already exists');
                 }
             } catch (error) {
                 console.error(error);

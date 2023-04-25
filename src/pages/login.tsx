@@ -29,8 +29,11 @@ const LoginPage = (props) => {
     } else if (res.user) {
       setErrorText('')
       console.log(res.user)
-      const returnUrl = router.query?.returnUrl as string
-      returnUrl ? router.push(returnUrl) : router.push('/')
+      const returnUrl = router.query?.returnUrl as string | undefined
+      if (returnUrl) {
+        console.log('going to ', { returnUrl })
+      }
+      returnUrl ? router.replace(returnUrl) : router.replace('/')
     }
   }
 
@@ -64,13 +67,20 @@ const LoginPage = (props) => {
               placeholder='About Me'
               inputType='TextArea'
             /> */}
+            {errorText && <div className='mt-4'><span className='text-red-500'>{errorText}</span></div>}
             <button
               className='bg-primary w-fit px-4 py-1 mt-2 text-inverted rounded-lg'
               onClick={onLogin}
             >
               Login
             </button>
-            {errorText && <div className='mt-4'><span className='text-red-500'>{errorText}</span></div>}
+            <span className='mx-2'>or</span>
+            <button
+              className='bg-secondary w-fit px-4 py-1 mt-2 text-primary rounded-lg'
+              onClick={() => router.push('/signup')}
+            >
+              Sign Up
+            </button>
           </div>
         </div>
       </main>

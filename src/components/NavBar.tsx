@@ -11,7 +11,7 @@ const NavBar = (props: Props) => {
                 <div className='flex gap-4 items-center'>
                     <Link className='text-primary' href='/'>Home</Link>
                     <Link className='text-primary' href='/appointments'>My Appointments</Link>
-                    <Link href='/signup' className='w-10 h-10 rounded-full bg-placeholder flex items-center justify-center' >
+                    <Link href='/account' className='w-10 h-10 rounded-full bg-placeholder flex items-center justify-center' >
                         {/* <span className='text-primary'>MK</span> */}
                     </Link>
                     {/* <Link href='/account' className='w-10 h-10 rounded-full border-black bg-placeholder border-2 flex items-center justify-center' >

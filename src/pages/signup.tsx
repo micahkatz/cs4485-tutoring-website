@@ -45,6 +45,10 @@ const SignupPage = (props) => {
         const response = await userContext.signup(newUser)
         if (response.error) {
           setErrorMessage(response.error.msg)
+        } else {
+          setErrorMessage('')
+          const returnUrl = router.query?.returnUrl as string
+          returnUrl ? router.push(returnUrl) : router.push('/')
         }
       } catch (err) {
         setErrorMessage('There was an error signing up')
