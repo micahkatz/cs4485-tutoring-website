@@ -44,10 +44,11 @@ export default (props: Props) => {
     const login = async (email: string, password: string) => {
         try {
             console.log('getting user from db')
-            const resultingUser = await axios.post('/api/auth/login', {
+            const response = await axios.post('/api/auth/login', {
                 email,
                 password
-            }) as user
+            })
+            const resultingUser = response.data as user
             setCurrUser(resultingUser)
             setIsLoggedIn(true)
 
@@ -81,10 +82,15 @@ export default (props: Props) => {
     const signup = async (newUser: NewUserType) => {
         try {
             console.log('getting user from db')
-            const resultingUser = await axios.post('/api/user', {
+            const response = await axios.post('/api/user', {
                 ...newUser,
                 password: await encryptPassword(newUser.password)
-            }) as user
+            })
+
+            const resultingUser = response.data as user
+            setCurrUser(resultingUser)
+            setIsLoggedIn(true)
+
             setCurrUser(resultingUser)
             setIsLoggedIn(true)
 

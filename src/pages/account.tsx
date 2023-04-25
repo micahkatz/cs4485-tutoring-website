@@ -33,7 +33,7 @@ const AccountPage = (props) => {
                                 </div> */}
                             </button>
                             <div className='flex flex-col'>
-                                <span className='text-primary text-lg'>John Doe</span>
+                                <span className='text-primary text-lg'>{userContext?.currUser?.first_name} {userContext?.currUser?.last_name}</span>
                                 <button>
                                     <span className='text-link font-bold hover:text-primary text-sm'>Change profile photo</span>
                                 </button>
