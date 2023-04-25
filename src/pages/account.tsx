@@ -4,12 +4,14 @@ import NavBar from '../components/NavBar'
 import { useRouter } from 'next/router'
 import CommonInput from '@/components/CommonInput'
 import { IoCamera, IoSettingsOutline } from 'react-icons/io5'
+import { UserContext } from '@/context/userContext'
 
 type Props = {}
 
-const AccountPage = (props: Props) => {
+const AccountPage = (props) => {
     const router = useRouter()
     const { tutorId } = router.query
+    const userContext = React.useContext(UserContext)
 
     return (
         <>
@@ -31,7 +33,7 @@ const AccountPage = (props: Props) => {
                                 </div> */}
                             </button>
                             <div className='flex flex-col'>
-                                <span className='text-primary text-lg'>John Doe</span>
+                                <span className='text-primary text-lg'>{userContext?.currUser?.first_name} {userContext?.currUser?.last_name}</span>
                                 <button>
                                     <span className='text-link font-bold hover:text-primary text-sm'>Change profile photo</span>
                                 </button>
@@ -61,6 +63,12 @@ const AccountPage = (props: Props) => {
                             />
                             <button className='bg-primary w-fit px-4 py-1 mt-2 rounded-lg text-inverted'>
                                 Save Profile
+                            </button>
+                            <button
+                                className='bg-secondary w-fit px-4 py-1 mt-2 rounded-lg text-primary'
+                                onClick={userContext.logout}
+                            >
+                                Log Out
                             </button>
                         </div>
                     </div>
