@@ -2,10 +2,8 @@ import React, { useEffect } from 'react'
 import { Oval } from 'react-loader-spinner'
 import TutorCard from '../components/TutorCard'
 import { tutor, user, subject, tutors_subjects } from '@prisma/client'
+import { TutorWithSubjects } from '@/types/globals'
 
-type TutorWithSubjects = tutor & {
-    subjects: tutors_subjects[];
-};
 
 type Props = {
 }
