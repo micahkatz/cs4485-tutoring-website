@@ -205,7 +205,7 @@ const SearchBar = (props: Props) => {
     }
     else {
         return (
-            <div className='flex'>
+            <div className='flex z-10 h-20 md:h-11'>
                 <div className='my-2 gap-2 grid grid-cols-3 sm:grid-cols-5 items-start'>
                     <div className='bg-gray-400 rounded-sm px-2 py-1 flex gap-2 items-center col-span-3 sm:col-span-2'>
                         <IoSearch className='min-w-[1rem]' />
@@ -225,11 +225,13 @@ const SearchBar = (props: Props) => {
                             ) || (<IoChevronBack className='min-w-[1rem]' />)}
                         </button>
                         {subjectDisplay && (
-                        <ul className='w-full'>
-                            {subjectsOptions.map(subject => (
-                                <li key={subject.subjectID} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={subject.subjectID} key-subjectid={subject.subjectID} onClick={updateSubject} className='w-full h-full'>{subject.name}</button></li>
-                            ))}
-                        </ul>)}
+                        <div className='border-2 border-gray-400 bg-white max-h-48 overflow-y-auto'>
+                            <ul className='w-full px-1 pb-1'>
+                                {subjectsOptions.map(subject => (
+                                    <li key={subject.subjectID} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={subject.subjectID} key-subjectid={subject.subjectID} onClick={updateSubject} className='w-full h-full'>{subject.name}</button></li>
+                                ))}
+                            </ul>
+                        </div>)}
                     </div>
                     <div className='rounded-sm gap-2'>
                         <button className='bg-gray-400 flex items-center justify-between w-full h-full px-2 py-1' onClick={toggleDayDisplay}>
@@ -239,11 +241,13 @@ const SearchBar = (props: Props) => {
                             ) || (<IoChevronBack className='min-w-[1rem]' />)}
                         </button>
                         {dayDisplay && (
-                        <ul className='w-full'>
-                            {daysOptions.map(date => (
-                                <li key={date.getTime()} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={date.getTime()} key-dayid={date.getTime()} onClick={updateDay} className='w-full h-full'>{formatDay(date)}</button></li>
-                            ))}
-                        </ul>)}
+                        <div className='border-2 border-gray-400 bg-white max-h-48 overflow-y-auto'>
+                            <ul className='w-full px-1 pb-1'>
+                                {daysOptions.map(date => (
+                                    <li key={date.getTime()} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={date.getTime()} key-dayid={date.getTime()} onClick={updateDay} className='w-full h-full'>{formatDay(date)}</button></li>
+                                ))}
+                            </ul>
+                        </div>)}
                     </div>
                     <div className='rounded-sm gap-2'>
                         <button className='bg-gray-400 flex items-center justify-between w-full h-full px-2 py-1' onClick={toggleHourDisplay}>
@@ -253,11 +257,13 @@ const SearchBar = (props: Props) => {
                             ) || (<IoChevronBack className='min-w-[1rem]' />)}
                         </button>
                         {hourDisplay && (
-                        <ul className='w-full'>
-                            {hoursOptions.map(date => (
-                                <li key={date.getHours()} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={date.getHours()} key-hourid={date.getHours()} onClick={updateHour} className='w-full h-full'>{formatHour(date)}</button></li>
-                            ))}
-                        </ul>)}
+                        <div className='border-2 border-gray-400 bg-white max-h-48 overflow-y-auto'>
+                            <ul className='w-full px-1 pb-1'>
+                                {hoursOptions.map(date => (
+                                    <li key={date.getHours()} className='text-center mt-1 bg-secondary border-white border-2 hover:border-black transition-colors'><button key={date.getHours()} key-hourid={date.getHours()} onClick={updateHour} className='w-full h-full'>{formatHour(date)}</button></li>
+                                ))}
+                            </ul>
+                        </div>)}
                     </div>
                 </div>
                 {filtersApplied && <div className='mt-8 sm:mt-[0.8rem] md:mt-[0.85rem] ml-4 items-start'>
