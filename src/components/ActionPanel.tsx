@@ -8,6 +8,8 @@ type Props = {}
 
 const ActionPanel = (props: Props) => {
     const userContext = React.useContext(UserContext)
+    const [firstName, setFirstName] = React.useState<string>(userContext?.currUser?.first_name)
+    const [lastName, setLastName] = React.useState<string>(userContext?.currUser?.last_name)
     
     return (
         <div className='bg-secondary w-full h-auto'>
@@ -33,7 +35,7 @@ const ActionPanel = (props: Props) => {
                         <Link href='/account'>
                         <span className="text-xs md:text-sm line-clamp-1">My Profile</span>
                         <IoPersonOutline size='7rem' className="h-auto max-h-[75%] sm:max-h-[100%] max-w-[75%] sm:max-w-[100%] m-auto"/>
-                        <p className="text-sm md:text-base line-clamp-1">{userContext?.currUser?.first_name} {userContext?.currUser?.last_name}</p>
+                        <p className="text-sm md:text-base line-clamp-1">{firstName} {lastName}</p>
                         </Link>
                     </div>
                 </div>

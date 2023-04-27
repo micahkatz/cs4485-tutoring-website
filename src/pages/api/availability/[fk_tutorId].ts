@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<availability | string | null>
+    res: NextApiResponse<availability | string | null | availability[]>
 ) {
     const foreignTutorString = req.query.fk_tutorID as string;
 
@@ -14,7 +14,7 @@ export default async function handler(
     switch (req.method) {
         case 'GET':  // GET an availability given a foreign tutor id
             try {
-                const availResult = await prisma.availability.findUnique({
+                const availResult = await prisma.availability.findMany({
                     where: {
                         fk_tutorID: foreignTutor,
                     },
@@ -31,31 +31,31 @@ export default async function handler(
                 res.status(500).send('Server Error');
             }
             break;
-        case 'DELETE': // Delete an availability based on given ID
-            try {
-                const availResult = await prisma.availability.findUnique({
-                    where: {
-                        fk_tutorID: foreignTutor,
-                    },
-                });
-                if (!availResult) {
-                    res.status(404).send(
-                        `Could not find subject with id ${foreignTutor}`
-                    );
-                    return;
-                }
-                await prisma.availability.delete({
-                    where: {
-                        fk_tutorID: foreignTutor,
-                    }
-                })
-                // send success
-                res.status(200).end("Success");
-            } catch (err) {
-                console.error(err);
-                res.status(500).send('Server Error');
-            }
-            break;
+        // case 'DELETE': // Delete an availability based on given ID
+        //     try {
+        //         const availResult = await prisma.availability.findFirst({
+        //             where: {
+        //                 fk_tutorID: foreignTutor,
+        //             },
+        //         });
+        //         if (!availResult) {
+        //             res.status(404).send(
+        //                 `Could not find subject with id ${foreignTutor}`
+        //             );
+        //             return;
+        //         }
+        //         await prisma.availability.delete({
+        //             where: {
+        //                 fk_tutorID: foreignTutor,
+        //             }
+        //         })
+        //         // send success
+        //         res.status(200).end("Success");
+        //     } catch (err) {
+        //         console.error(err);
+        //         res.status(500).send('Server Error');
+        //     }
+        //     break;
         default:
             res.status(405).send('Invalid Request Method');
     }

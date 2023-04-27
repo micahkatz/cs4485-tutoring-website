@@ -33,11 +33,11 @@ export default async function handler(
             }
 
             try {
-                const { fk_tutorID, ...withoutId } = partialBody;
+                const { availID, ...withoutId } = partialBody;
 
                 const updateResponse = await prisma.availability.update({
                     where: {
-                        fk_tutorID,
+                        availID,
                     },
                     data: withoutId,
                 });
