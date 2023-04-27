@@ -7,6 +7,7 @@ import ActionPanel from '../components/ActionPanel'
 import TutorFeed from '../components/TutorFeed'
 import TutorCard from '@/components/TutorCard'
 import SearchBar from '@/components/SearchBar'
+import UserContext from '@/context/userContext'
 import { subject } from '@prisma/client'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -16,7 +17,6 @@ export default function Home() {
   const [subjectFilter, setSubjectFilter] = React.useState<string>("")
   const [dayFilter, setDayFilter] = React.useState<Date>()
   const [hourFilter, setHourFilter] = React.useState<Date>()
-
   return (
     <>
       <Head>

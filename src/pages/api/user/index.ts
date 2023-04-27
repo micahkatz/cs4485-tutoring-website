@@ -1,12 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient, Prisma, tutor, user } from '@prisma/client';
+import { UserWithoutPassword } from '@/types/globals';
 
 const prisma = new PrismaClient();
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<any | string>
+    res: NextApiResponse<UserWithoutPassword | string>
 ) {
     switch (req.method) {
         case 'POST': // POST is create new
@@ -15,11 +16,28 @@ export default async function handler(
             try {
                 const { userID, ...withoutId } = body;
 
-                const createResponse = await prisma.user.create({
-                    data: withoutId,
+                const foundUser = await prisma.user.findFirst({
+                    where: {
+                        email: body.email,
+                    },
                 });
 
-                res.status(200).json(createResponse);
+                if (!foundUser) {
+                    const createResponse = await prisma.user.create({
+                        data: withoutId,
+                    });
+
+                    if (!createResponse) {
+                        res.status(500).send(`Could not sign up`);
+                    } else {
+                        const { password: resultPass, ...withoutPassword } =
+                            createResponse;
+
+                        res.status(200).json(withoutPassword);
+                    }
+                } else {
+                    res.status(409).send('User already exists');
+                }
             } catch (error) {
                 console.error(error);
                 res.status(500).send('Server Error');
@@ -44,7 +62,10 @@ export default async function handler(
                     data: withoutId,
                 });
 
-                res.status(200).json(updateResponse);
+                const { password: resultPass, ...withoutPassword } =
+                    updateResponse;
+
+                res.status(200).json(withoutPassword);
             } catch (error) {
                 console.error(error);
                 res.status(500).send('Server Error');

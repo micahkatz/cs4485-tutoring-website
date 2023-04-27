@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
@@ -8,12 +8,107 @@ import CommonTag from '@/components/tag/CommonTag'
 import TagList from '@/components/tag/TagList'
 import CommonInput from '@/components/CommonInput'
 import { IoCamera } from 'react-icons/io5'
+import { ReactEventHandler } from 'react'
+import { ChangeEventHandler } from 'react'
+import { ChangeEvent } from 'react'
+import { user } from '@prisma/client'
+import { NewUserType } from '@/types/globals'
+import { UserContext } from '@/context/userContext'
 
 type Props = {}
 
-const SignupPage = (props: Props) => {
+const SignupPage = (props) => {
   const router = useRouter()
   const { tutorId } = router.query
+  const [firstName, setFirstName] = React.useState("")
+  const [lastName, setLastName] = React.useState("")
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
+  const [errorMessage, setErrorMessage] = React.useState("")
+  const emailRegex = RegExp("^[A-Za-z0-9.]+@[A-Za-z.]+.[A-Za-z]+$")
+  const userContext = useContext(UserContext)
+
+  const handleSignUp = async () => {
+    // Validate entries
+    if (entriesValid()) {
+      // Create user object
+      let newUser: NewUserType = {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        password: password,
+        totalLearnHours: 0
+      }
+
+      try {
+
+        const response = await userContext.signup(newUser)
+        if (response.error) {
+          setErrorMessage(response.error.msg)
+        } else {
+          setErrorMessage('')
+          const returnUrl = router.query?.returnUrl as string
+          returnUrl ? router.push(returnUrl) : router.push('/')
+        }
+      } catch (err) {
+        setErrorMessage('There was an error signing up')
+
+      }
+    }
+  }
+
+  const entriesValid = () => {
+    // Trim entries
+    let first = firstName.trim(), last = lastName.trim(), em = email.trim(), pw = password.trim()
+
+    // Reset error message
+    setErrorMessage("")
+
+    // Entries filled out
+    if (first == '' || last == '' || em == '' || pw == '') {
+      setErrorMessage("Please fill out all requested information first.")
+      return false
+    }
+
+    // First/Last Name
+    if (first.indexOf(' ') != -1 || last.indexOf(' ') != -1) {
+      setErrorMessage("First/Last name must be a single word.")
+      return false
+    }
+
+    // Email
+    if (!emailRegex.test(em)) {
+      setErrorMessage("Invalid email format. Please enter a real email.")
+      return false
+    }
+
+    // Password
+    if (password.length < 8) {
+      setErrorMessage("Password is too short. Must be longer than 8 characters.")
+      return false
+    }
+    return true
+  }
+
+  const updateFirstName = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement
+    setFirstName(target.value)
+  }
+
+  const updateLastName = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement
+    setLastName(target.value)
+  }
+
+  const updateEmail = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement
+    setEmail(target.value)
+  }
+
+  const updatePassword = (event: ChangeEvent) => {
+    let target = event.target as HTMLInputElement
+    setPassword(target.value)
+  }
 
   return (
     <>
@@ -29,29 +124,25 @@ const SignupPage = (props: Props) => {
           <div className='max-w-[40rem] m-auto'>
             <h1 className='font-bold text-2xl mb-2'>Create an Account</h1>
             <div className='grid grid-cols-2 gap-4'>
-              <CommonInput
+              <CommonInput onChange={updateFirstName}
                 placeholder='First Name'
               />
-              <CommonInput
+              <CommonInput onChange={updateLastName}
                 placeholder='Last Name'
               />
             </div>
-            <CommonInput
+            <CommonInput onChange={updateEmail}
               placeholder='Email'
               type='email'
             />
-            <CommonInput
+            <CommonInput onChange={updatePassword}
               placeholder='Password'
               type='password'
             />
-            {/* <CommonInput
-              innerClass='h-40'
-              placeholder='About Me'
-              inputType='TextArea'
-            /> */}
-            <button className='bg-primary w-fit px-4 py-1 mt-2 text-inverted rounded-lg'>
+            <button className='bg-primary w-fit px-4 py-1 mt-2 text-inverted rounded-lg' onClick={handleSignUp}>
               Create Account
             </button>
+            <span className='text-red-500 text-lg flex mt-6 justify-center w-full'>{errorMessage}</span>
           </div>
         </div>
       </main>
