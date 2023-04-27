@@ -2,10 +2,13 @@ import React from 'react'
 import { IoBookmarkOutline, IoBookmark } from 'react-icons/io5'
 import CommonTag from './tag/CommonTag'
 import Link from 'next/link'
+import { availability } from '@prisma/client'
 
 type Props = {
     isOnlyDateTime?: boolean;
-    className?: string
+    className?: string;
+    startDT: availability['startDT'];
+    endDT: availability['endDT'];
 }
 
 const AppointmentCard = (props: Props) => {
@@ -15,8 +18,8 @@ const AppointmentCard = (props: Props) => {
                 {!props?.isOnlyDateTime && <img src='fakeperson.webp' className='w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover aspect-square mr-2 border-primary border-2 rounded-md' />}
                 <div className='flex flex-col w-full'>
                     {!props?.isOnlyDateTime && <span className='text-sm sm:text-base md:text-xl font-bold truncate max-w-[90%]'>Appointment with Jane Doe</span>}
-                    <span className='text-xs sm:text-sm md:text-base'>Date: March 15, 2023</span>
-                    <span className='text-xs sm:text-sm md:text-base'>1:00 PM - 2:00 PM</span>
+                    <span className='text-xs sm:text-sm md:text-base'>Date: {props.startDT.toDateString()}</span>
+                    <span className='text-xs sm:text-sm md:text-base'>{props.startDT.toLocaleTimeString()} - {props.endDT.toLocaleTimeString()}</span>
                 </div>
                 {!props?.isOnlyDateTime &&
                     <div className='w-auto justify-items-end'>

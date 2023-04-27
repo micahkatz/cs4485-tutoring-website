@@ -78,14 +78,20 @@ const AppointmentCalendar = (props: Props) => {
             <AppointmentCard
                 isOnlyDateTime
                 className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
+                startDT={new Date('3:00 PM 3/27/2023')}
+                endDT={new Date('4:00 PM 3/27/2023')}
             />
             <AppointmentCard
                 isOnlyDateTime
                 className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
+                startDT={new Date('3:00 PM 3/27/2023')}
+                endDT={new Date('4:00 PM 3/27/2023')}
             />
             <AppointmentCard
                 isOnlyDateTime
                 className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
+                startDT={new Date('3:00 PM 3/27/2023')}
+                endDT={new Date('4:00 PM 3/27/2023')}
             />
         </div>
     )
