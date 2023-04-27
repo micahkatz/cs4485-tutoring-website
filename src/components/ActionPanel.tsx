@@ -10,7 +10,6 @@ const ActionPanel = (props: Props) => {
     const userContext = React.useContext(UserContext)
     const [firstName, setFirstName] = React.useState(null)
     const [lastName, setLastName] = React.useState(null)
-    let isServer = (typeof window === 'undefined') ? false : true;
 
     React.useEffect(() => {
         setFirstName(userContext?.currUser?.first_name)
@@ -38,7 +37,7 @@ const ActionPanel = (props: Props) => {
                         <p className="text-sm md:text-base line-clamp-1">0 Saved</p>
                     </div>
                     {
-                        (typeof window !== 'undefined') && firstName && lastName &&
+                        firstName && lastName &&
                         <div className="h-full m-auto mx-8 my-4 align-top text-center font-bold space-y-1 max-w-1">
                             <Link href='/account'>
                                 <span className="text-xs md:text-sm line-clamp-1">My Profile</span>
