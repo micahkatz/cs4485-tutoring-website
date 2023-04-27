@@ -14,13 +14,9 @@ import 'react-clock/dist/Clock.css';
 import { LooseValue } from 'react-datetime-picker/dist/cjs/shared/types'
 import { TutorContext } from '@/context/tutorContext'
 import Calendar from 'react-calendar';
+import AppointmentCalendar from '@/components/AppointmentCalendar'
 // import Calendar from 'reactjs-availability-calendar'
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider, PickersDay, PickersDayProps } from '@mui/x-date-pickers'
-import { Badge } from '@mui/material'
-import dayjs, { Dayjs } from 'dayjs';
-import AppointmentCard from '@/components/AppointmentCard'
+
 
 type Props = {}
 
@@ -38,7 +34,6 @@ const TutorPage = (props) => {
     const [chosenDateTime, setChosenDateTime] = React.useState<LooseValue | undefined>(new Date());
     const [availability, setAvailability] = React.useState<availability[] | null>(null)
     const tutorContext = React.useContext(TutorContext)
-    const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
 
     const fetchTutorData = async () => {
         await fetch('../../api/tutor/' + tutorId, { method: 'GET' })
@@ -116,23 +111,6 @@ const TutorPage = (props) => {
             fetchTutorData()
     }, [tutorId])
 
-    function ServerDay(props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }) {
-        const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-
-        const isSelected =
-            !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) > 0;
-
-        return (
-            <Badge
-                key={props.day.toString()}
-                overlap="circular"
-                badgeContent={isSelected ? '🌚' : undefined}
-            >
-                <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
-            </Badge>
-        );
-    }
-
     if (isLoading) {
         return <><h1>Loading...</h1></>
     }
@@ -166,55 +144,7 @@ const TutorPage = (props) => {
                                 />
                             </div>
                         </div>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-
-                            <DateCalendar
-                                // defaultValue={initialValue}
-                                slots={{
-                                    day: ServerDay,
-                                }}
-                                slotProps={{
-                                    day: {
-                                        highlightedDays,
-                                    } as any,
-                                }}
-                            />
-                        </LocalizationProvider>
-                        <AppointmentCard
-                            isOnlyDateTime
-                            className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                        />
-                        <AppointmentCard
-                            isOnlyDateTime
-                            className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                        />
-                        <AppointmentCard
-                            isOnlyDateTime
-                            className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                        />
-
-                        {/* <Calendar bookings={[
-                            {
-                                from: new Date('2022-07-03'),
-                                to: new Date('2022-07-30'),
-                                middayCheckout: true,
-                            },
-                            {
-                                from: '2022-04-08',
-                                to: '2022-04-13',
-                                middayCheckout: true,
-                            },
-                            {
-                                from: '2022-09-03T19:20:35.593Z',
-                                to: '2022-09-22T19:20:35.593Z',
-                                middayCheckout: false,
-                            },
-                        ]}
-                            showNumberOfMonths={1}
-                        /> */}
-
-                        {/* <div className='w-full h-80 bg-gray-400 flex items-center justify-center'>
-                        </div> */}
+                        <AppointmentCalendar />
                     </div>
                 </main>
             </>
