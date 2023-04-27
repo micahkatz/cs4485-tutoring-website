@@ -2,10 +2,8 @@ import React, { useEffect } from 'react'
 import { Oval } from 'react-loader-spinner'
 import TutorCard from '../components/TutorCard'
 import { tutor, user, subject, tutors_subjects } from '@prisma/client'
+import { TutorWithSubjects } from '@/types/globals'
 
-type TutorWithSubjects = tutor & {
-    subjects: tutors_subjects[];
-};
 
 type Props = {
     filterName: string;
@@ -225,11 +223,11 @@ const TutorFeed = (props: Props) => {
         return (
             <div className='flex justify-center'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4 w-full sm:max-w-[75%] 2xl:max-w-[66%]'>
-                    {tutorDisplayIndexes.map(index => (
-                            <TutorCard key={tutorData[index].fk_userID} 
-                            tutor={tutorData[index]} 
-                            user={tutorUserData[index]} 
-                            subjects={tutorSubjectData[index]}/>
+                    {tutorData.map(tut => (
+                            <TutorCard key={tut.fk_userID} 
+                            tutor={tut} 
+                            user={tutorUserData[tutorData.indexOf(tut)]} 
+                            subjects={tutorSubjectData[tutorData.indexOf(tut)]}/>
                     ))}
                 </div>
             </div>
