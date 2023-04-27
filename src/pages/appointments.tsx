@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 type Props = {}
 
-const Appointments = (props: Props) => {
+const Appointments = (props) => {
     return (
         <>
             <Head>
@@ -22,12 +22,12 @@ const Appointments = (props: Props) => {
                     <div className='gird grid-cols-1 justify-center w-full max-w-[66%] lg:max-w-[50%] xl:max-w-[40%]'>
                         <div className='w-full'>
                             <h2 className='text-center text-4xl'>Next:</h2>
-                            <AppointmentCard />
+                            <AppointmentCard className='w-full' />
                         </div>
                         <div className='w-full'>
                             <h2 className='text-center text-4xl'>Upcoming:</h2>
-                            <AppointmentCard />
-                            <AppointmentCard />
+                            <AppointmentCard className='w-full' />
+                            <AppointmentCard className='w-full' />
                         </div>
                     </div>
                 </div>
