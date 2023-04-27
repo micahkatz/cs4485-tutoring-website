@@ -15,6 +15,7 @@ type UserContextType = {
     signup: (newUser: NewUserType) => Promise<LoginReturnType>,
     logout: () => void,
     currUser: UserWithoutPassword | null,
+    setCurrUser: React.Dispatch<React.SetStateAction<UserWithoutPassword | null>>,
     isLoggedIn: boolean,
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
 }
@@ -122,10 +123,10 @@ export default (props: Props) => {
         router.push('/login')
     }
 
-
     const store = {
         login,
         signup,
+        setCurrUser,
         currUser,
         logout,
         setIsLoggedIn,

@@ -8,12 +8,14 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<availability | string | null | availability[]>
 ) {
-    const foreignTutorString = req.query.fk_tutorID as string;
+    const foreignTutorString = req.query.fk_tutorId as string;
 
     const foreignTutor = parseInt(foreignTutorString);
     switch (req.method) {
         case 'GET':  // GET an availability given a foreign tutor id
             try {
+
+                // Grab availability
                 const availResult = await prisma.availability.findMany({
                     where: {
                         fk_tutorID: foreignTutor,
