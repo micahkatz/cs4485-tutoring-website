@@ -144,7 +144,7 @@ const TutorPage = (props) => {
                                 />
                             </div>
                         </div>
-                        <AppointmentCalendar />
+                        <AppointmentCalendar tutorId={tutorId} />
                     </div>
                 </main>
             </>

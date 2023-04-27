@@ -5,7 +5,15 @@ import { DateCalendarSlotsComponentsProps, DayCalendarSkeleton, LocalizationProv
 import { Badge } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs';
 import AppointmentCard from '@/components/AppointmentCard'
-type Props = {}
+import axios from 'axios';
+type Props = {
+    tutorId: string
+}
+
+type AvailabilityReturnType = {
+    startDT: Date;
+    endDT: Date;
+}
 
 const AppointmentCalendar = (props: Props) => {
     type HighlightedDay = {
@@ -15,13 +23,52 @@ const AppointmentCalendar = (props: Props) => {
 
     const [isLoading, setIsLoading] = React.useState(false)
     const [currMonth, setCurrMonth] = React.useState<Dayjs | null>(dayjs(new Date()))
+    const [currAvailability, setCurrAvailability] = React.useState<AvailabilityReturnType[]>([])
+    const [currDayAvailability, setCurrDayAvailability] = React.useState<AvailabilityReturnType[]>([])
+    const [selectedDay, setSelectedDay] = React.useState(dayjs(new Date()))
 
-    const getAvailabilityForMonth = () => {
+    const handleUpdateHighlightedDays = (availability: AvailabilityReturnType[]) => {
+        var newHighlightedDays: number[] = []
+        availability.forEach((item, index) => {
+            newHighlightedDays.push(item.startDT.getDate())
+        })
+
+        setHighlightedDays(newHighlightedDays)
+    }
+
+    const getAvailabilityForMonth = async () => {
         if (currMonth !== null) {
-            if (currMonth.month() === 3 && currMonth.year() === 2023) {
-                setHighlightedDays([3, 4, 5, 6])
-            } else {
-                setHighlightedDays([20, 21])
+            try {
+                // const response = await axios.get('/api/filteredappointments', {
+                //     params: {
+                //         fk_tutorID: props.tutorId
+                //     },
+                //     data: {
+                //         month: currMonth.month(),
+                //         year: currMonth.year()
+                //     }
+                // })
+                // const availability: AvailabilityReturnType[] = response.data
+                if (currMonth.month() === 3 && currMonth.year() === 2023) {
+
+                    const availability: AvailabilityReturnType[] = [
+                        {
+                            startDT: new Date('1:00 PM 3/27/2023'),
+                            endDT: new Date('2:00 PM 3/27/2023'),
+                        },
+                        {
+                            startDT: new Date('3:00 PM 3/29/2023'),
+                            endDT: new Date('4:00 PM 3/29/2023'),
+                        },
+                    ]
+                    setCurrAvailability(availability)
+                    handleUpdateHighlightedDays(availability)
+                } else {
+                    setHighlightedDays([1, 2])
+
+                }
+            } catch (err) {
+                console.error(err)
             }
         }
     }
@@ -65,6 +112,8 @@ const AppointmentCalendar = (props: Props) => {
                     onMonthChange={handleMonthChange}
                     renderLoading={() => <DayCalendarSkeleton />}
                     loading={isLoading}
+                    value={selectedDay}
+                    onChange={(value) => setSelectedDay(value)}
                     slots={{
                         day: ServerDay,
                     }}
@@ -75,24 +124,23 @@ const AppointmentCalendar = (props: Props) => {
                     }}
                 />
             </LocalizationProvider>
-            <AppointmentCard
-                isOnlyDateTime
-                className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                startDT={new Date('3:00 PM 3/27/2023')}
-                endDT={new Date('4:00 PM 3/27/2023')}
-            />
-            <AppointmentCard
-                isOnlyDateTime
-                className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                startDT={new Date('3:00 PM 3/27/2023')}
-                endDT={new Date('4:00 PM 3/27/2023')}
-            />
-            <AppointmentCard
-                isOnlyDateTime
-                className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                startDT={new Date('3:00 PM 3/27/2023')}
-                endDT={new Date('4:00 PM 3/27/2023')}
-            />
+            {
+                currAvailability.filter(item => {
+                    const startDay = item.startDT.getDate()
+                    const currDay = selectedDay.date()
+                    return startDay === currDay
+                }
+                    // item.startDT.getMonth() === selectedDay.month() &&
+                ).map(item => (
+
+                    <AppointmentCard
+                        isOnlyDateTime
+                        className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
+                        startDT={item.startDT}
+                        endDT={item.endDT}
+                    />
+                ))
+            }
         </div>
     )
 }
