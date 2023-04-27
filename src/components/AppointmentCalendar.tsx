@@ -63,6 +63,24 @@ const AppointmentCalendar = (props: Props) => {
                     ]
                     setCurrAvailability(availability)
                     handleUpdateHighlightedDays(availability)
+                } else if (currMonth.month() === 4 && currMonth.year() === 2023) {
+
+                    const availability: AvailabilityReturnType[] = [
+                        {
+                            startDT: new Date('12:30 PM 4/10/2023'),
+                            endDT: new Date('1:00 PM 4/10/2023'),
+                        },
+                        {
+                            startDT: new Date('1:30 PM 4/10/2023'),
+                            endDT: new Date('2:00 PM 4/10/2023'),
+                        },
+                        {
+                            startDT: new Date('3:30 PM 4/11/2023'),
+                            endDT: new Date('4:00 PM 4/11/2023'),
+                        },
+                    ]
+                    setCurrAvailability(availability)
+                    handleUpdateHighlightedDays(availability)
                 } else {
                     setHighlightedDays([1, 2])
 
