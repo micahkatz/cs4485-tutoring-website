@@ -6,14 +6,20 @@ import { TutorWithSubjects } from '@/types/globals'
 
 
 type Props = {
+    filterName: string;
+    filterSubject: string;
+    filterDay: Date | undefined;
+    filterHours: Date | undefined;
 }
 
 const TutorFeed = (props: Props) => {
     const [tutorData, setTutorData] = React.useState<TutorWithSubjects[]>()
     const [tutorUserData, setTutorUserData] = React.useState<user[]>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[][]>()
-    const [isLoading, setLoading] = React.useState(true)
-    const [loadError, setLoadError] = React.useState(false)
+    const [isLoading, setLoading] = React.useState<boolean>(true)
+    const [loadError, setLoadError] = React.useState<boolean>(false)
+    const [tutorDisplayIndexes, setTutorDisplayIndexes] = React.useState<number[]>([])
+    const nameFilter = props.filterName, subjectFilter = props.filterSubject, dayFilter = props.filterDay, hoursFilter = props.filterHours;
     
     const fetchTutorData = async () => {
         await fetch('api/tutor', {method: 'GET'})
@@ -32,6 +38,12 @@ const TutorFeed = (props: Props) => {
 
                 // Update data state
                 setTutorData(result)
+
+                // Update tutor display indexes
+                let indexes = []
+                for(let i = 0; i < result.length; i++)
+                    indexes.push(i)
+                setTutorDisplayIndexes(indexes)
             }
         })
         .catch((error) => {
@@ -123,9 +135,83 @@ const TutorFeed = (props: Props) => {
         setLoading(false)
     }
 
+    const filterTutors = () => {
+        // Return if called when loading
+        if(isLoading) return
+
+        // Display no tutors if tutorData undefined
+        if(!tutorData || !tutorUserData || !tutorSubjectData || loadError) {
+            setTutorDisplayIndexes([])
+            return
+        }
+
+        let indexes = []
+        let blacklist = []
+
+        // Parse filters
+        /// Name
+        for(let i = 0; i < tutorUserData.length; i++) {
+            let name = (tutorUserData[i].first_name.toLowerCase() + " " + tutorUserData[i].last_name.toLowerCase())
+            if( name.indexOf(nameFilter.toLowerCase()) != -1 ) {
+                indexes.push(i) // NOTE: everything will be pushed if nameFilter is empty (empty value: '')
+            }
+            else { 
+                if( indexes.indexOf(i) != -1 ) {
+                    indexes.splice(indexes.indexOf(i), 1)
+                }
+                blacklist.push(i)
+            }
+        }
+
+        /// Subject
+        if(subjectFilter != '') {
+            for(let i = 0; i < tutorSubjectData.length; i++) {
+                let subjects = tutorSubjectData[i]
+                // If tutor has subjects
+                if( subjects.length > 0 ) {
+                    for(let j = 0; j < subjects.length; j++) {
+                        if( subjects[j].name == subjectFilter ) {
+                            // Subject matches, break
+                            if( indexes.indexOf(i) == -1 && blacklist.indexOf(i) == -1 )
+                                // Add to display indexes since it's not already there
+                                indexes.push(i)
+                            break
+                        }
+                        else {
+                            if( indexes.indexOf(i) != -1 ) {
+                                // Subject doesn't match, remove from display indexes
+                                indexes.splice(indexes.indexOf(i), 1)
+                            }
+
+                            // Add to blacklist if not already there
+                            if( blacklist.indexOf(i) != -1 )
+                                blacklist.push(i)
+                        }
+                    }
+                }
+                // If tutor has no subjects
+                else if( indexes.indexOf(i) != -1 ) {
+                    // Remove from display indexes if there already
+                    indexes.splice(indexes.indexOf(i), 1)
+                }
+            }
+        }
+        
+        /// Day
+
+        /// Hours
+
+        // Set new display indexes
+        setTutorDisplayIndexes(indexes)
+    }
+
     useEffect(() => {
         fetchTutorData()
     }, [])
+
+    useEffect(() => {
+        filterTutors()
+    }, [nameFilter, subjectFilter, dayFilter, hoursFilter])
 
     if( isLoading ) {
         return <div className='mt-6'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF'/></div>
