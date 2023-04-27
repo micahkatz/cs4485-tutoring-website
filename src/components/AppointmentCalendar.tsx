@@ -14,7 +14,7 @@ const AppointmentCalendar = (props: Props) => {
     const [highlightedDays, setHighlightedDays] = React.useState<number[]>([]);
 
     const [isLoading, setIsLoading] = React.useState(false)
-    const [currMonth, setCurrMonth] = React.useState<Dayjs | null>(null)
+    const [currMonth, setCurrMonth] = React.useState<Dayjs | null>(dayjs(new Date()))
 
     const getAvailabilityForMonth = () => {
         if (currMonth !== null) {
