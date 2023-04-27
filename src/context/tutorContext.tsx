@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useLocalStorage } from 'usehooks-ts'
 
 type TutorContextType = {
-    getAvailabilityForTutor: (tutorId: string) => Promise<availability[] | null>
+    getAvailabilityForTutor: (tutorId: number) => Promise<availability[] | null>
 }
 export const TutorContext = React.createContext<TutorContextType | null>(null);
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 export default (props: Props) => {
     const { children } = props
 
-    const getAvailabilityForTutor = async (tutorId: string) => {
+    const getAvailabilityForTutor = async (tutorId: number) => {
         try {
             const response = await axios.get('/api/appointment', {
                 data: {

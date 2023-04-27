@@ -30,7 +30,7 @@ const TutorPage = (props) => {
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[]>()
     const [isLoading, setLoading] = React.useState(true)
     const router = useRouter()
-    const tutorId = router.query?.tutorId as string
+    const tutorId = Number(router.query?.tutorId) as number
     const [chosenDateTime, setChosenDateTime] = React.useState<LooseValue | undefined>(new Date());
     const [availability, setAvailability] = React.useState<availability[] | null>(null)
     const tutorContext = React.useContext(TutorContext)
@@ -88,7 +88,7 @@ const TutorPage = (props) => {
         setLoading(false)
     }
 
-    const getAvailability = async (tutorId: string) => {
+    const getAvailability = async (tutorId: number) => {
         if (tutorId) {
             const response = await tutorContext.getAvailabilityForTutor(tutorId)
             setAvailability(response)

@@ -2,12 +2,15 @@ import React from 'react'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendarSlotsComponentsProps, DayCalendarSkeleton, LocalizationProvider, PickersDay, PickersDayProps } from '@mui/x-date-pickers'
-import { Badge } from '@mui/material'
+import { Badge, Modal } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs';
 import AppointmentCard from '@/components/AppointmentCard'
 import axios from 'axios';
+import { appointment } from '@prisma/client';
+import { NewAppointmentType } from '@/types/globals';
+import { UserContext } from '@/context/userContext';
 type Props = {
-    tutorId: string
+    tutorId: number
 }
 
 type AvailabilityReturnType = {
@@ -20,13 +23,14 @@ const AppointmentCalendar = (props: Props) => {
 
     }
     const [highlightedDays, setHighlightedDays] = React.useState<number[]>([]);
-
+    const userContext = React.useContext(UserContext)
     const [isLoading, setIsLoading] = React.useState(false)
     const [currMonth, setCurrMonth] = React.useState<Dayjs | null>(dayjs(new Date()))
     const [currAvailability, setCurrAvailability] = React.useState<AvailabilityReturnType[]>([])
     const [currDayAvailability, setCurrDayAvailability] = React.useState<AvailabilityReturnType[]>([])
     const [selectedDay, setSelectedDay] = React.useState(dayjs(new Date()))
-
+    const [isModalOpen, setIsModalOpen] = React.useState(false)
+    const [newAppointment, setNewAppointment] = React.useState<appointment | null>(null)
     const handleUpdateHighlightedDays = (availability: AvailabilityReturnType[]) => {
         var newHighlightedDays: number[] = []
         availability.forEach((item, index) => {
@@ -100,6 +104,19 @@ const AppointmentCalendar = (props: Props) => {
         getAvailabilityForMonth()
     };
 
+    const handleNewAppointment = async (times: AvailabilityReturnType) => {
+        if (confirm('Are you sure you want to make this appointment?')) {
+            const newAppointment: NewAppointmentType = {
+                fk_tutorID: props.tutorId,
+                fk_userID: userContext.currUser.userID,
+                startDT: times.startDT,
+                endDT: times.endDT,
+            }
+
+            console.log('creating new appointment', { newAppointment })
+        }
+    }
+
     React.useEffect(() => {
         getAvailabilityForMonth()
     }, [currMonth])
@@ -122,7 +139,7 @@ const AppointmentCalendar = (props: Props) => {
     }
 
     return (
-        <div>
+        <div className='flex flex-col items-center'>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
 
                 <DateCalendar
@@ -152,13 +169,21 @@ const AppointmentCalendar = (props: Props) => {
                 ).map(item => (
 
                     <AppointmentCard
-                        isOnlyDateTime
+                        isNewAppointment
                         className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
                         startDT={item.startDT}
                         endDT={item.endDT}
+                        onClick={() => handleNewAppointment(item)}
                     />
                 ))
             }
+
+            <Modal
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            >
+                <h1>New Appointment</h1>
+            </Modal>
         </div>
     )
 }
