@@ -1,9 +1,14 @@
 import React from 'react'
 import { IoCalendarClearOutline, IoCalendarClear, IoCalendarOutline, IoCalendar, IoBookmarksOutline, IoBookmarks, IoPersonOutline, IoPerson } from 'react-icons/io5'
+import { UserContext } from '@/context/userContext'
+import { user, user_favorites, appointment} from '@prisma/client'
+import Link from 'next/link'
 
 type Props = {}
 
 const ActionPanel = (props: Props) => {
+    const userContext = React.useContext(UserContext)
+    
     return (
         <div className='bg-secondary w-full h-auto'>
             <div className="flex justify-center w-auto h-full">
@@ -25,9 +30,11 @@ const ActionPanel = (props: Props) => {
                         <p className="text-sm md:text-base line-clamp-1">0 Saved</p>
                     </div>
                     <div className="h-full m-auto mx-8 my-4 align-top text-center font-bold space-y-1 max-w-1">
+                        <Link href='/account'>
                         <span className="text-xs md:text-sm line-clamp-1">My Profile</span>
                         <IoPersonOutline size='7rem' className="h-auto max-h-[75%] sm:max-h-[100%] max-w-[75%] sm:max-w-[100%] m-auto"/>
-                        <p className="text-sm md:text-base line-clamp-1">Micah Katz</p>
+                        <p className="text-sm md:text-base line-clamp-1">{userContext?.currUser?.first_name} {userContext?.currUser?.last_name}</p>
+                        </Link>
                     </div>
                 </div>
             </div>
