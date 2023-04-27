@@ -138,7 +138,7 @@ const TutorFeed = (props: Props) => {
             <div className='flex justify-center'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4 w-full sm:max-w-[75%] 2xl:max-w-[66%]'>
                     {tutorData.map(tut => (
-                            <TutorCard key={tut.tutorID} 
+                            <TutorCard key={tut.fk_userID} 
                             tutor={tut} 
                             user={tutorUserData[tutorData.indexOf(tut)]} 
                             subjects={tutorSubjectData[tutorData.indexOf(tut)]}/>
