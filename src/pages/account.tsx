@@ -31,6 +31,7 @@ const AccountPage = (props) => {
     const [errorMessage, setErrorMessage] = React.useState<string>("")
     const [successMessage, setSuccessMessage] = React.useState<string>("")
     const [subjectsDisplay, setSubjectsDisplay] = React.useState<boolean>(false)
+    const [optionsDisplay, setOptionsDisplay] = React.useState<boolean>(false)
     const [subjectsOptions, setSubjectsOptions] = React.useState<subject[]>([])
     const [subjectsSelections, setSubjectsSelections] = React.useState<boolean[]>([])
     const emailRegex = RegExp("^[A-Za-z0-9.]+@[A-Za-z.]+.[A-Za-z]+$")
@@ -277,7 +278,29 @@ const AccountPage = (props) => {
           return false
         }
         return true
-      }
+    }
+
+    const upgradeAccount = async () => {
+        // Display loading wheel
+        setSaving(true)
+
+        // Create tutor object
+        const newTutor: tutor = {
+            fk_userID: userContext.currUser.userID,
+            about_me: '',
+            totalTutorHours: 0,
+            profile_picture: null
+        }
+
+        // Make post request to create tutor
+        const createdTutor = await fetch('api/tutor', {method:'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(newTutor)})
+        .then((response) => response.json())
+        .then((json) => {
+            // Reload page
+            setSaving(false)
+            window.location.reload()
+        })
+    }
 
     const updateFirstName = (event: React.ChangeEvent) => {
         let target = event.target as HTMLInputElement
@@ -357,9 +380,12 @@ const AccountPage = (props) => {
                                     </button>
                                 </div>
                                 <div className='flex flex-1 justify-end'>
-                                    <button>
+                                    {!tutorContext &&
+                                    <button
+                                        onClick={() => {setOptionsDisplay(!optionsDisplay)}}
+                                    >
                                         <IoSettingsOutline className='' size='1.5rem' />
-                                    </button>
+                                    </button>}
                                 </div>
                             </div>
                             <div className='flex flex-col'>
@@ -433,9 +459,17 @@ const AccountPage = (props) => {
                                 >
                                     Log Out
                                 </button>
+                                {!tutorContext &&
+                                <button
+                                    className={`bg-green-500 w-fit px-4 py-1 mt-2 rounded-lg text-primary transition-all ${!optionsDisplay ? 'opacity-0' : ''}`}
+                                    disabled={optionsDisplay ? false : true}
+                                    onClick={upgradeAccount}
+                                >
+                                    Become a Tutor
+                                </button>}
                                 {isSaving && <div className='flex justify-center'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF'/></div>}
-                                <span className='text-red-500 text-lg flex mt-6 justify-center w-full'>{errorMessage}</span>
-                                <span className='text-green-500 text-lg flex mt-6 justify-center w-full'>{successMessage}</span>
+                                {errorMessage != '' && <span className='text-red-500 text-lg flex mt-6 justify-center w-full'>{errorMessage}</span>}
+                                {successMessage != '' && <span className='text-green-500 text-lg flex mt-6 justify-center w-full'>{successMessage}</span>}
                             </div>
                         </div>
                     </div>
