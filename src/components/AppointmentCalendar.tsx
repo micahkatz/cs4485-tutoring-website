@@ -9,6 +9,7 @@ import axios from 'axios';
 import { appointment } from '@prisma/client';
 import { NewAppointmentType } from '@/types/globals';
 import { UserContext } from '@/context/userContext';
+import { DateTime } from 'luxon';
 type Props = {
     tutorId: number
 }
@@ -34,7 +35,7 @@ const AppointmentCalendar = (props: Props) => {
     const handleUpdateHighlightedDays = (availability: AvailabilityReturnType[]) => {
         var newHighlightedDays: number[] = []
         availability.forEach((item, index) => {
-            newHighlightedDays.push(item.startDT.getDate() + 1)
+            newHighlightedDays.push(item.startDT.getDate())
         })
 
         setHighlightedDays(newHighlightedDays)
@@ -50,9 +51,10 @@ const AppointmentCalendar = (props: Props) => {
                 const availability: { startDT: string; endDT: string }[] = response.data
 
                 const formattedAvailability = availability.map(item => {
+
                     return {
-                        startDT: new Date(item.startDT),
-                        endDT: new Date(item.endDT),
+                        startDT: DateTime.fromISO(item.startDT).toJSDate(),
+                        endDT: DateTime.fromISO(item.endDT).toJSDate()
                     }
                 })
 

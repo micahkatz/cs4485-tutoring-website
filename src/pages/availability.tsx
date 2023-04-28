@@ -15,7 +15,7 @@ import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-picker
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { FiPlus } from 'react-icons/fi'
 import { RiDeleteBin6Line } from 'react-icons/ri'
-import moment from 'moment'
+const { DateTime } = require("luxon");
 import { NewAvailabilityType } from '@/types/globals'
 
 type Props = {}
@@ -100,39 +100,41 @@ const AvailabilityPage = (props) => {
 
     const daysOfWeek = [
         {
+            text: 'SUNDAY',
+            val: 0,
+        },
+        {
             text: 'MONDAY',
-            val: 0
+            val: 1
         },
         {
             text: 'TUESDAY',
-            val: 1,
-        },
-        {
-            text: 'WEDNESDAY',
             val: 2,
         },
         {
-            text: 'THURSDAY',
+            text: 'WEDNESDAY',
             val: 3,
         },
         {
-            text: 'FRIDAY',
+            text: 'THURSDAY',
             val: 4,
         },
         {
-            text: 'SATURDAY',
+            text: 'FRIDAY',
             val: 5,
         },
         {
-            text: 'SUNDAY',
+            text: 'SATURDAY',
             val: 6,
         },
     ]
 
     const addAvailabilityInput = (dayVal: number) => {
         setNewAvailability(prevAvailability => {
-            const startDT = moment().day(dayVal)
-            const endDT = moment().day(dayVal)
+
+            DateTime.now().day(dayVal)
+            const startDT = DateTime.now().day(dayVal)
+            const endDT = DateTime.now().day(dayVal)
             const newAvailability: NewAvailabilityType[] = [...prevAvailability, {
                 fk_tutorID: tutorId,
                 startDT: startDT.toDate(),
