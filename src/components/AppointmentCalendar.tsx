@@ -34,7 +34,7 @@ const AppointmentCalendar = (props: Props) => {
     const handleUpdateHighlightedDays = (availability: AvailabilityReturnType[]) => {
         var newHighlightedDays: number[] = []
         availability.forEach((item, index) => {
-            newHighlightedDays.push(item.startDT.getDate())
+            newHighlightedDays.push(item.startDT.getDate() + 1)
         })
 
         setHighlightedDays(newHighlightedDays)
@@ -43,52 +43,22 @@ const AppointmentCalendar = (props: Props) => {
     const getAvailabilityForMonth = async () => {
         if (currMonth !== null) {
             try {
-                // const response = await axios.get('/api/filteredappointments', {
-                //     params: {
-                //         fk_tutorID: props.tutorId
-                //     },
-                //     data: {
-                //         month: currMonth.month(),
-                //         year: currMonth.year()
-                //     }
-                // })
-                // const availability: AvailabilityReturnType[] = response.data
-                if (currMonth.month() === 3 && currMonth.year() === 2023) {
+                const response = await axios.post(`/api/filteredavailability/${props.tutorId}`, {
+                    month: currMonth.month(),
+                    year: currMonth.year()
+                })
+                const availability: { startDT: string; endDT: string }[] = response.data
 
-                    const availability: AvailabilityReturnType[] = [
-                        {
-                            startDT: new Date('1:00 PM 3/27/2023'),
-                            endDT: new Date('2:00 PM 3/27/2023'),
-                        },
-                        {
-                            startDT: new Date('3:00 PM 3/29/2023'),
-                            endDT: new Date('4:00 PM 3/29/2023'),
-                        },
-                    ]
-                    setCurrAvailability(availability)
-                    handleUpdateHighlightedDays(availability)
-                } else if (currMonth.month() === 4 && currMonth.year() === 2023) {
+                const formattedAvailability = availability.map(item => {
+                    return {
+                        startDT: new Date(item.startDT),
+                        endDT: new Date(item.endDT),
+                    }
+                })
 
-                    const availability: AvailabilityReturnType[] = [
-                        {
-                            startDT: new Date('12:30 PM 4/10/2023'),
-                            endDT: new Date('1:00 PM 4/10/2023'),
-                        },
-                        {
-                            startDT: new Date('1:30 PM 4/10/2023'),
-                            endDT: new Date('2:00 PM 4/10/2023'),
-                        },
-                        {
-                            startDT: new Date('3:30 PM 4/11/2023'),
-                            endDT: new Date('4:00 PM 4/11/2023'),
-                        },
-                    ]
-                    setCurrAvailability(availability)
-                    handleUpdateHighlightedDays(availability)
-                } else {
-                    setHighlightedDays([1, 2])
-
-                }
+                console.log({ availability, formattedAvailability })
+                setCurrAvailability(formattedAvailability)
+                handleUpdateHighlightedDays(formattedAvailability)
             } catch (err) {
                 console.error(err)
             }
