@@ -1,4 +1,10 @@
-import { appointment, user, tutor, tutors_subjects } from '@prisma/client';
+import {
+    appointment,
+    user,
+    tutor,
+    tutors_subjects,
+    availability,
+} from '@prisma/client';
 
 type TutorWithSubjects = tutor & {
     subjects: tutors_subjects[];
@@ -49,3 +55,4 @@ type RealAvailability = {
 };
 
 type NewAppointmentType = Omit<appointment, 'appointID'>;
+type NewAvailabilityType = Omit<availability, 'availID'>;
