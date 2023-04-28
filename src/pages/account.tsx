@@ -305,6 +305,12 @@ const AccountPage = (props) => {
             setSaving(false)
             window.location.reload()
         })
+        .catch((error) => {
+            setErrorMessage("Failed to upgrade the user account.")
+            console.error(error)
+            setSaving(false)
+            return
+        })
     }
 
     const updateFirstName = (event: React.ChangeEvent) => {
