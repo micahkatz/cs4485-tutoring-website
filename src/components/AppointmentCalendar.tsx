@@ -53,8 +53,8 @@ const AppointmentCalendar = (props: Props) => {
                 const formattedAvailability = availability.map(item => {
 
                     return {
-                        startDT: DateTime.fromISO(item.startDT).toJSDate(),
-                        endDT: DateTime.fromISO(item.endDT).toJSDate()
+                        startDT: DateTime.fromISO(item.startDT, { zone: 'utc' }).toJSDate(),
+                        endDT: DateTime.fromISO(item.endDT, { zone: 'utc' }).toJSDate()
                     }
                 })
 
@@ -62,6 +62,8 @@ const AppointmentCalendar = (props: Props) => {
                 setCurrAvailability(formattedAvailability)
                 handleUpdateHighlightedDays(formattedAvailability)
             } catch (err) {
+                setHighlightedDays([])
+                setCurrAvailability([])
                 console.error(err)
             }
         }

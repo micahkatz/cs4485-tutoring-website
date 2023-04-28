@@ -9,8 +9,12 @@ import {
 } from '@prisma/client';
 import { TimeFrame } from '@/types/globals';
 import { error } from 'console';
+import { DateTime } from 'luxon';
 
 const prisma = new PrismaClient();
+
+const getDaysInMonth = (year: number, month: number) =>
+    DateTime.utc(year, month + 1).daysInMonth;
 
 const FilterAvailability = (
     year: number,
@@ -22,10 +26,12 @@ const FilterAvailability = (
     let availDict = new Map<number, TimeFrame[]>(); // Key = Day of the month [getDate()], Value = availability timeframe
 
     // Fill dictionary with all relevant dates & their respective times
-    const daysInMonth: number = new Date(year, month, 0).getDate();
+    const daysInMonth: number = getDaysInMonth(year, month);
     for (let i = 1; i <= daysInMonth; i++) {
         availDict.set(i, []);
-        let dayOfTheWeekFiltered = new Date(year, month, i).getDay();
+        let dayOfTheWeekFiltered = new Date(
+            Date.UTC(year, month, i)
+        ).getUTCDay();
         for (let j = 0; j < allAvails.length; j++) {
             // Pull repeat boolean, declare timeframe
             let repeat = allAvails[j].repeatWeekly;
@@ -34,30 +40,30 @@ const FilterAvailability = (
             // Check if it's repeating weekly
             if (repeat) {
                 // Make sure we're on the same day of the week
-                let dayOfTheWeekAvail = allAvails[j].startDT.getDay();
+                let dayOfTheWeekAvail = allAvails[j].startDT.getUTCDay();
                 if (dayOfTheWeekAvail == dayOfTheWeekFiltered) {
                     // Set timeframe
                     timeframe = {
-                        startDT: new Date(
+                        startDT: DateTime.utc(
                             year,
-                            month,
+                            month + 1,
                             i,
-                            allAvails[j].startDT.getHours(),
+                            allAvails[j].startDT.getUTCHours(),
                             allAvails[j].startDT.getMinutes()
-                        ),
-                        endDT: new Date(
+                        ).toJSDate(),
+                        endDT: DateTime.utc(
                             year,
-                            month,
+                            month + 1,
                             i,
-                            allAvails[j].endDT.getHours(),
+                            allAvails[j].endDT.getUTCHours(),
                             allAvails[j].endDT.getMinutes()
-                        ),
+                        ).toJSDate(),
                     };
                 }
             } else {
                 // Make sure we're on the exact date
-                let availDay = allAvails[j].startDT.getDate();
-                let availMonth = allAvails[j].startDT.getMonth() + 1;
+                let availDay = allAvails[j].startDT.getUTCDate();
+                let availMonth = allAvails[j].startDT.getUTCMonth() + 1;
                 let availYear = allAvails[j].startDT.getFullYear();
                 if (i == availDay && month == availMonth && year == availYear) {
                     // Set timeframe
@@ -79,9 +85,9 @@ const FilterAvailability = (
         // Grab info from the appointment
         let appointment = allAppoints[i];
 
-        let dayOfTheMonth = appointment.startDT.getDate();
-        let appointStartHour = appointment.startDT.getHours();
-        let appointEndHour = appointment.endDT.getHours();
+        let dayOfTheMonth = appointment.startDT.getUTCDate();
+        let appointStartHour = appointment.startDT.getUTCHours();
+        let appointEndHour = appointment.endDT.getUTCHours();
 
         // Go through each timeframe for the day of the month
         let timeframes: TimeFrame[] = availDict.get(dayOfTheMonth);
@@ -90,15 +96,16 @@ const FilterAvailability = (
             // Grab info from timeframe
             let timeframe = timeframes[j];
 
-            let availStartHour = timeframe.startDT.getHours();
-            let availEndHour = timeframe.endDT.getHours();
+            let availStartHour = timeframe.startDT.getUTCHours();
+            let availEndHour = timeframe.endDT.getUTCHours();
 
             // Check the four cases
             if (availStartHour == appointStartHour) {
                 // Move start time forward to appointment end time
                 timeframe.startDT = allAppoints[j].endDT;
                 if (
-                    timeframe.startDT.getHours() == timeframe.endDT.getHours()
+                    timeframe.startDT.getUTCHours() ==
+                    timeframe.endDT.getUTCHours()
                 ) {
                     // Fully booked, remove from dictionary
                     continue;
@@ -110,7 +117,8 @@ const FilterAvailability = (
                 // Move end time backward to appointment start time
                 timeframe.endDT = allAppoints[j].startDT;
                 if (
-                    timeframe.startDT.getHours() == timeframe.endDT.getHours()
+                    timeframe.startDT.getUTCHours() ==
+                    timeframe.endDT.getUTCHours()
                 ) {
                     // Fully booked, remove from dictionary
                     continue;
@@ -164,9 +172,7 @@ export default async function handler(
                 }
 
                 // Grab appointments
-                const daysInMonth = new Date(
-                    Date.UTC(year, month, 0)
-                ).getDate();
+                const daysInMonth = getDaysInMonth(year, month);
                 const allAppoints = await prisma.appointment.findMany({
                     where: {
                         fk_tutorID: foreignTutor,

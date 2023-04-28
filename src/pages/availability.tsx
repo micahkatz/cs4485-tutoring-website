@@ -37,8 +37,8 @@ const AvailabilityPage = (props) => {
     const [availability, setAvailability] = React.useState<availability[] | null>([])
     const [newAvailability, setNewAvailability] = React.useState<NewAvailabilityType[] | null>([])
     const getFilteredAvailability = React.useCallback((dayVal: number) => {
-        const alreadyStoredAvailability = availability.filter(item => new Date(item.startDT).getDay() === dayVal)
-        const notStoredAvailability = newAvailability.filter(item => new Date(item.startDT).getDay() === dayVal)
+        const alreadyStoredAvailability = availability?.filter(item => new Date(item.startDT).getDay() === dayVal) || []
+        const notStoredAvailability = newAvailability?.filter(item => new Date(item.startDT).getDay() === dayVal) || []
         return [...alreadyStoredAvailability, ...notStoredAvailability]
     }, [availability, newAvailability])
 
@@ -146,10 +146,10 @@ const AvailabilityPage = (props) => {
     }
     const removeAvailabilityInput = (item: NewAvailabilityType) => {
         setNewAvailability(prevAvailability => {
-            return prevAvailability.filter(prev => prev.startDT !== item.startDT)
+            return prevAvailability?.filter(prev => prev.startDT !== item.startDT)
         })
         setAvailability(prevAvailability => {
-            return prevAvailability.filter(prev => prev.startDT !== item.startDT)
+            return prevAvailability?.filter(prev => prev.startDT !== item.startDT)
         })
     }
 

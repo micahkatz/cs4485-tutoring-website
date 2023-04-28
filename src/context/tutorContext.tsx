@@ -18,22 +18,18 @@ export default (props: Props) => {
 
     const getAvailabilityForTutor = async (tutorId: number) => {
         try {
-            // const response = await axios.get('/api/availability', {
-            //     params: {
-            //         tutorId
-            //     }
-            // })
+            const response = await axios.get(`/api/availability/${tutorId}`)
 
-            // const availability = response.data as availability[]
-            const availability: availability[] = [
-                {
-                    availID: 1,
-                    startDT: new Date('2023-04-25T00:00:00.000Z'),
-                    endDT: new Date('2023-04-25T01:00:00.000Z'),
-                    repeatWeekly: true,
-                    fk_tutorID: tutorId
-                }
-            ]
+            const availability = response.data as availability[]
+            // const availability: availability[] = [
+            //     {
+            //         availID: 1,
+            //         startDT: new Date('2023-04-25T00:00:00.000Z'),
+            //         endDT: new Date('2023-04-25T01:00:00.000Z'),
+            //         repeatWeekly: true,
+            //         fk_tutorID: tutorId
+            //     }
+            // ]
 
             return availability
         } catch (err) {
