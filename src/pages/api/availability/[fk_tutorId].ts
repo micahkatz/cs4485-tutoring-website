@@ -14,6 +14,7 @@ export default async function handler(
     switch (req.method) {
         case 'GET':  // GET an availability given a foreign tutor id
             try {
+
                 // Grab availability
                 const availResult = await prisma.availability.findMany({
                     where: {
