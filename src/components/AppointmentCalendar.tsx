@@ -43,6 +43,7 @@ const AppointmentCalendar = (props: Props) => {
 
     const getAvailabilityForMonth = async () => {
         if (currMonth !== null) {
+            setIsLoading(true)
             try {
                 const response = await axios.post(`/api/filteredavailability/${props.tutorId}`, {
                     month: currMonth.month(),
@@ -66,14 +67,16 @@ const AppointmentCalendar = (props: Props) => {
                 setCurrAvailability([])
                 console.error(err)
             }
+            setIsLoading(false)
+
         }
     }
 
     const handleMonthChange = (date: Dayjs) => {
-
-        setIsLoading(true);
-        // setHighlightedDays([1, 2, 3]);
-        setIsLoading(false);
+        setCurrMonth(date)
+        getAvailabilityForMonth()
+    };
+    const handleYearChange = (date: Dayjs) => {
         setCurrMonth(date)
         getAvailabilityForMonth()
     };
@@ -119,6 +122,7 @@ const AppointmentCalendar = (props: Props) => {
                 <DateCalendar
                     // defaultValue={initialValue}
                     onMonthChange={handleMonthChange}
+                    onYearChange={handleYearChange}
                     renderLoading={() => <DayCalendarSkeleton />}
                     loading={isLoading}
                     value={selectedDay}

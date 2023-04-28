@@ -131,14 +131,13 @@ const AvailabilityPage = (props) => {
 
     const addAvailabilityInput = (dayVal: number) => {
         setNewAvailability(prevAvailability => {
-
-            DateTime.now().day(dayVal)
-            const startDT = DateTime.now().day(dayVal)
-            const endDT = DateTime.now().day(dayVal)
+            const currTime: luxon.DateTime = DateTime.now()
+            const startDT: luxon.DateTime = currTime.set({ weekday: dayVal })
+            const endDT: luxon.DateTime = currTime.set({ weekday: dayVal })
             const newAvailability: NewAvailabilityType[] = [...prevAvailability, {
                 fk_tutorID: tutorId,
-                startDT: startDT.toDate(),
-                endDT: endDT.toDate(),
+                startDT: startDT.toJSDate(),
+                endDT: endDT.toJSDate(),
                 repeatWeekly: true
             }]
             return newAvailability
