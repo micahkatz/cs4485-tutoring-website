@@ -164,13 +164,15 @@ export default async function handler(
                 }
 
                 // Grab appointments
-                const daysInMonth = new Date(year, month, 0).getDate();
+                const daysInMonth = new Date(
+                    Date.UTC(year, month, 0)
+                ).getDate();
                 const allAppoints = await prisma.appointment.findMany({
                     where: {
                         fk_tutorID: foreignTutor,
                         startDT: {
-                            lte: new Date(year, month, daysInMonth),
-                            gte: new Date(year, month, 1),
+                            lte: new Date(Date.UTC(year, month, daysInMonth)),
+                            gte: new Date(Date.UTC(year, month, 1)),
                         },
                     },
                 });
