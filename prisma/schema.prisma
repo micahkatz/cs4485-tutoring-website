@@ -10,84 +10,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model user {
-  userID  Int   @id @unique   @default(autoincrement())
-  tutorID tutor?     //user can have 0 or 1 relation to a tutor ID. All tutors are users, but not all users are tutors
-  email  String 
-  first_name  String
-  last_name   String
-  password    String
-  totalLearnHours  Int    @default(0)
-
+  userID          Int    @id @unique @default(autoincrement())
+  tutorID         tutor? //user can have 0 or 1 relation to a tutor ID. All tutors are users, but not all users are tutors
+  email           String
+  first_name      String
+  last_name       String
+  password        String
+  totalLearnHours Int    @default(0)
 
   appointments appointment[] //keeps track of appointments assigned to this user. 1:n relation
-  favorites user_favorites[] //for prisma to make the m:n relation
+  favorites    user_favorites[] //for prisma to make the m:n relation
 }
 
 model tutor {
-  user_relation  user  @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_userID Int @unique  //This is the value in the DB
-  about_me String
-  totalTutorHours Int @default(0)
+  user_relation   user    @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID       Int     @unique //This is the value in the DB
+  about_me        String
+  totalTutorHours Int     @default(0)
   profile_picture String?
-
 
   availability availability[] //keeps track of availability carried by this tutor. 1:n relation
   appointments appointment[] //keeps track of appointments assigned to this tutor. 1:n relation
-  subjects tutors_subjects[] // for prisma to make the m:n relation
-  favorited user_favorites[] // for prisma to make the m:n relation
+  subjects     tutors_subjects[] // for prisma to make the m:n relation
+  favorited    user_favorites[] // for prisma to make the m:n relation
 }
 
 model subject {
-  subjectID Int @id @default(autoincrement())
-  name String
+  subjectID   Int    @id @default(autoincrement())
+  name        String
   description String
 
   tutors tutors_subjects[] // for prisma to make the m:n relation
 }
 
 model availability {
-  availID Int @id @default(autoincrement())
-  avail_relation tutor  @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_tutorID Int  //this value exists in the DB
-  
-  startDT DateTime
-  endDT DateTime
-  repeatWeekly Boolean  // 0, do not repeat weekly. 1 do repeat each week
+  availID        Int   @id @default(autoincrement())
+  avail_relation tutor @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID     Int //this value exists in the DB
+
+  startDT      DateTime
+  endDT        DateTime
+  repeatWeekly Boolean // 0, do not repeat weekly. 1 do repeat each week
 }
 
 model appointment {
-  appointID Int @id @default(autoincrement())
+  appointID      Int   @id @unique @default(autoincrement())
   tutor_relation tutor @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_tutorID Int //this value exists in the DB
-  user_relation user @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_userID Int //this value exists in the DB
+  fk_tutorID     Int //this value exists in the DB
+  user_relation  user  @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID      Int //this value exists in the DB
 
   startDT DateTime
-  endDT DateTime
+  endDT   DateTime
 }
 
 // m:n relation. Many tutors have many different subjects
-model tutors_subjects{  
-  tutor_relation    tutor     @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_tutorID        Int      
-  subject_relation  subject   @relation(fields: [fk_subjectID], references: [subjectID])  //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_subjectID      Int 
+model tutors_subjects {
+  tutor_relation   tutor   @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID       Int
+  subject_relation subject @relation(fields: [fk_subjectID], references: [subjectID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_subjectID     Int
 
   @@id([fk_tutorID, fk_subjectID]) //basically saying the unique id for this table is just the relations btwn the tutors and subjects
 }
 
 model user_favorites {
-  user_relation    user      @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_userID        Int      
-  tutor_relation   tutor     @relation(fields: [fk_tutorID], references: [fk_userID])  //this value does NOT exist in the DB. Purely for prisma to make the relation
-  fk_tutorID       Int 
+  user_relation  user  @relation(fields: [fk_userID], references: [userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_userID      Int
+  tutor_relation tutor @relation(fields: [fk_tutorID], references: [fk_userID]) //this value does NOT exist in the DB. Purely for prisma to make the relation
+  fk_tutorID     Int
 
   @@id([fk_userID, fk_tutorID]) //basically saying the unique id for this table is just the relations btwn the tutors and users
 }
-
-
 
 ///Example
 
