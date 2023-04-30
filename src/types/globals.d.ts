@@ -56,3 +56,12 @@ type RealAvailability = {
 
 type NewAppointmentType = Omit<appointment, 'appointID'>;
 type NewAvailabilityType = Omit<availability, 'availID'>;
+
+interface NewAvailabilityWithStrings extends NewAvailabilityType {
+    startDT: string;
+    endDT: string;
+}
+interface AvailabilityWithStrings extends availability {
+    startDT: string;
+    endDT: string;
+}

@@ -1,4 +1,4 @@
-import { NewUserType, UserWithoutPassword } from '@/types/globals';
+import { AvailabilityWithStrings, NewUserType, UserWithoutPassword } from '@/types/globals';
 import { availability, user } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useLocalStorage } from 'usehooks-ts'
 
 type TutorContextType = {
-    getAvailabilityForTutor: (tutorId: number) => Promise<availability[] | null>
+    getAvailabilityForTutor: (tutorId: number) => Promise<AvailabilityWithStrings[] | null>
 }
 export const TutorContext = React.createContext<TutorContextType | null>(null);
 type Props = {
@@ -18,9 +18,13 @@ export default (props: Props) => {
 
     const getAvailabilityForTutor = async (tutorId: number) => {
         try {
-            const response = await axios.get(`/api/availability/${tutorId}`)
+            const response = await axios.get(`/api/availability`, {
+                params: {
+                    tutorId
+                }
+            })
 
-            const availability = response.data as availability[]
+            const availability = response.data as AvailabilityWithStrings[]
             // const availability: availability[] = [
             //     {
             //         availID: 1,
