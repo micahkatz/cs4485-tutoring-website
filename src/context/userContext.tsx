@@ -49,16 +49,15 @@ export default (props: Props) => {
         if (currUser) {
             // Check if user is a tutor
             const id = currUser.userID
-            await fetch('api/tutor/' + id, { method: 'GET' })
-                .then((resp) => resp.json())
-                .then((json) => {
-                    setIsTutor(true)
-                    console.log("user is a tutor")
-                })
-                .catch((error) => {
-                    setIsTutor(false)
-                    console.log("user is not a tutor")
-                })
+            try {
+                const resp = await axios.get(`/api/tutor/${id}`)
+
+                setIsTutor(true)
+                console.log("user is a tutor")
+            } catch (error) {
+                setIsTutor(false)
+                console.log("user is not a tutor", error)
+            }
         }
     }
 
