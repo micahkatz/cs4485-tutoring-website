@@ -16,6 +16,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { FiPlus } from 'react-icons/fi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import {
+    AvailabilityWithStrings,
     NewAvailabilityType,
     NewAvailabilityWithStrings,
 } from '@/types/globals';
@@ -145,6 +146,8 @@ const AvailabilityPage = (props) => {
 
     const createAvailability = (newData: NewAvailabilityWithStrings) =>
         axios.post('/api/availability', newData);
+    const updateAvailability = (newData: AvailabilityWithStrings) =>
+        axios.put('/api/availability', newData);
     const deleteAvailability = (id: string | number) =>
         axios.delete(`/api/availability/${id}`);
 
@@ -168,6 +171,13 @@ const AvailabilityPage = (props) => {
                         endDT: item.endDT.toDate().toISOString(),
                     });
                     console.log('created availability', item);
+                } else {
+                    await updateAvailability({
+                        ...item,
+                        startDT: item.startDT.toDate().toISOString(),
+                        endDT: item.endDT.toDate().toISOString(),
+                    });
+                    console.log('updated availability', item);
                 }
             }
             alert('Updated Availability')
