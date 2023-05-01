@@ -181,6 +181,7 @@ const AvailabilityPage = (props) => {
                 }
             }
             alert('Updated Availability')
+            getAvailability(tutorId)
         } catch (error) {
             console.error('there was an error updating availability', error);
         }

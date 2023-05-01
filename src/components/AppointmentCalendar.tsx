@@ -90,7 +90,17 @@ const AppointmentCalendar = (props: Props) => {
                 endDT: times.endDT,
             }
 
-            console.log('creating new appointment', { newAppointment })
+            try {
+
+                await axios.post('/api/appointment', newAppointment)
+                console.log('creating new appointment', { newAppointment })
+                alert('Appointment scheduled')
+            } catch (err) {
+                alert('Error creating appointment')
+                console.error(err)
+            }
+
+
         }
     }
 
