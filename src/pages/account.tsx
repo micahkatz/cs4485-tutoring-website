@@ -5,7 +5,7 @@ import TagList from '@/components/tag/TagList'
 import CommonTag from '@/components/tag/CommonTag'
 import { useRouter } from 'next/router'
 import CommonInput from '@/components/CommonInput'
-import { IoCamera, IoSettingsOutline, IoPencilSharp, IoCheckmark } from 'react-icons/io5'
+import { IoCamera, IoSettingsOutline, IoPencilSharp, IoCheckmark, IoClose, IoDownload } from 'react-icons/io5'
 import { UserContext } from '@/context/userContext'
 import { TutorWithSubjects, UserWithoutPassword } from '@/types/globals'
 import { subject, tutor, tutors_subjects } from '@prisma/client'
@@ -33,7 +33,12 @@ const AccountPage = (props) => {
     const [subjectsDisplay, setSubjectsDisplay] = React.useState<boolean>(false)
     const [subjectsOptions, setSubjectsOptions] = React.useState<subject[]>([])
     const [subjectsSelections, setSubjectsSelections] = React.useState<boolean[]>([])
+    const [uploadDisplay, setUploadDisplay] = React.useState<boolean>(false)
+    const [isDragging, setDragging] = React.useState<boolean>(false)
+    const [uploadFile, setUploadFile] = React.useState<File>(undefined)
+    const [uploadPreview, setUploadPreview] = React.useState<string>(undefined)
     const emailRegex = RegExp("^[A-Za-z0-9.]+@[A-Za-z.]+.[A-Za-z]+$")
+    const uploadForm = React.createRef<HTMLInputElement>()
     
     const loadProfile = async () => {
         // Check if user is a tutor
@@ -318,9 +323,86 @@ const AccountPage = (props) => {
         }
     }
 
+    const handleDrag = (event: React.DragEvent<any>) => {
+        // prevent default & stop propagation
+        event.preventDefault()
+        event.stopPropagation()
+        
+        if(event.type === 'dragenter' || event.type === 'dragover') {
+            //console.log('detected drag')
+            setDragging(true)
+        }
+        else {
+            //console.log('detected exit')
+            setDragging(false)
+        }
+    }
+
+    const handleDrop = (event: React.DragEvent<any>) => {
+        // prevent default & stop propagation
+        event.preventDefault()
+        event.stopPropagation()
+        setDragging(false)
+        
+        console.log('detected drop')
+        if( event.dataTransfer.files && event.dataTransfer.files[0] ) {
+            // Handle files
+            const file = event.dataTransfer.files[0]
+            if( file.type.match('image.*') ) {
+                setUploadFile(file)
+                setUploadPreview(URL.createObjectURL(file))
+                uploadForm.current.files = event.dataTransfer.files
+            }
+            else {
+                console.log('Incorrect File Type.')
+            }
+        }
+    }
+
+    const handleUpload = (event: React.FormEvent<HTMLInputElement>) => {
+        if( event.currentTarget.files && event.currentTarget.files[0] ) {
+            // Handle files
+            const file = event.currentTarget.files[0]
+            if( file.type.match('image.*') ) {
+                setUploadFile(file)
+                setUploadPreview(URL.createObjectURL(file))
+            }
+            else {
+                console.log('Incorrect File Type.')
+            }
+        }
+    }
+
+    const handleFile = async () => {
+        if( !uploadFile ) {
+            return
+        }
+
+        // Attempt to upload the file
+        const data = new FormData()
+        data.append('file', uploadFile)
+        await axios.post(`/api/media/${tutorContext.fk_userID}`, data)
+        .then((response) => {
+            if(response.status == 200) {
+                // Update client to reflect changes
+                setUploadDisplay(false)
+                setImageURL(response.data)
+                tutorContext.profile_picture = response.data
+            }
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+    }
+
     useEffect(() => {
         loadProfile()
     }, [])
+
+    useEffect(() => {
+        setUploadFile(undefined)
+        setUploadPreview(undefined)
+    }, [uploadDisplay])
 
     if(isLoading) {
         return <div className='flex justify-center'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF'/></div>
@@ -339,7 +421,7 @@ const AccountPage = (props) => {
                     <div className='p-4 flex flex-col items-center'>
                         <div className='flex flex-col gap-8 mb-8'>
                             <div className='flex items-center gap-4'>
-                                <button className='relative h-fit w-20'>
+                                <button className='relative h-fit w-20' onClick={() => {setUploadDisplay(!uploadDisplay)}}>
                                     {tutorContext &&
                                     <img src={imageURL} alt='Image Not Found' className='bg-gray-400 w-20 h-20 rounded-full' onError={({currentTarget}) => {
                                         // Replace with empty profile picture if src image dne
@@ -352,7 +434,7 @@ const AccountPage = (props) => {
                                 </button>
                                 <div className='flex flex-col'>
                                     <span className='text-primary text-lg'>{userContext?.currUser?.first_name} {userContext?.currUser?.last_name}</span>
-                                    <button>
+                                    <button onClick={() => {setUploadDisplay(!uploadDisplay)}}>
                                         <span className='text-link font-bold hover:text-primary text-sm'>Change profile photo</span>
                                     </button>
                                 </div>
@@ -439,6 +521,49 @@ const AccountPage = (props) => {
                             </div>
                         </div>
                     </div>
+                    {uploadDisplay &&
+                    <div className='fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex justify-center items-center'>
+                        <div className='relative bg-white border-2 rounded-md border-secondary shadow-lg w-[32rem] h-[26rem] flex flex-col justify-between text-center'>
+                            <div className='w-full p-1 pb-0 flex justify-end'>
+                                <button onClick={() => {setUploadDisplay(false)}}>
+                                    <IoClose size='2rem' className='hover:text-red-500 hover:scale-110 transition-all' />
+                                </button>
+                            </div>
+                            <div className='w-full flex mb-1 justify-center'>
+                                <span className='w-full justify-end font-bold'>Upload Profile Picture</span>
+                            </div>
+                            <div className='w-auto h-full mx-6 flex flex-col justify-center items-center'>
+                                {!uploadFile &&
+                                <>
+                                    <span>Drag & drop the image below, or upload manually</span>
+                                    <div className='w-full h-full border-2 border-primary'
+                                        onDragEnter={handleDrag}
+                                        onDragOver={handleDrag}
+                                    >
+                                        {isDragging &&
+                                        <div className='w-full h-full bg-primary flex justify-center items-center'
+                                            draggable='true'
+                                            onDragLeave={handleDrag}
+                                            onDrop={handleDrop}
+                                        />}
+                                    </div>
+                                </>
+                                ||
+                                <>
+                                    <span>Drag & drop the image below, or upload manually</span>
+                                    <img className='max-h-[13.875rem] border-2 border-primary' src={uploadPreview}/>
+                                </> 
+                                }
+                            </div>
+                            <div className='w-full my-1'>
+                                <input type='file' onChange={handleUpload} multiple={false} ref={uploadForm}/>
+                            </div>
+                            <div className='w-full mt-1 mb-6'>
+                                <button className='border-2 border-secondary px-4 py-1 bg-primary' onClick={handleFile}>Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                    }
                 </main>
             </>
         )
