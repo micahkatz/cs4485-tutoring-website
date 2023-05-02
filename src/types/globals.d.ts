@@ -65,3 +65,7 @@ interface AvailabilityWithStrings extends availability {
     startDT: string;
     endDT: string;
 }
+interface AppointmentWithStrings extends appointment {
+    startDT: string;
+    endDT: string;
+}
