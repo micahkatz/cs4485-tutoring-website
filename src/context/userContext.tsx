@@ -18,6 +18,8 @@ type UserContextType = {
     setCurrUser: React.Dispatch<React.SetStateAction<UserWithoutPassword | null>>,
     isLoggedIn: boolean,
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+    isTutor: boolean,
+    checkIsTutor: () => Promise<void>
 }
 export const UserContext = React.createContext<UserContextType | null>(null);
 type Props = {
@@ -33,13 +35,30 @@ export default (props: Props) => {
     const router = useRouter();
 
     const [currUser, setCurrUser] = useLocalStorage<UserWithoutPassword | null>('currUser', null)
-    const [isLoggedIn, setIsLoggedIn] = useLocalStorage('isLoggedIn', false)
+    const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>('isLoggedIn', false)
+    const [isTutor, setIsTutor] = useLocalStorage<boolean>('isTutor', false)
 
     const encryptPassword = async (password: string) => {
         var hash = await bcrypt.hash(password, 10);
         console.log('hashed', password, 'to', hash)
 
         return hash
+    }
+
+    const checkIsTutor = async () => {
+        if (currUser) {
+            // Check if user is a tutor
+            const id = currUser.userID
+            try {
+                const resp = await axios.get(`/api/tutor/${id}`)
+
+                setIsTutor(true)
+                console.log("user is a tutor")
+            } catch (error) {
+                setIsTutor(false)
+                console.log("user is not a tutor", error)
+            }
+        }
     }
 
     const login = async (email: string, password: string) => {
@@ -130,7 +149,9 @@ export default (props: Props) => {
         currUser,
         logout,
         setIsLoggedIn,
-        isLoggedIn
+        isLoggedIn,
+        isTutor,
+        checkIsTutor
     };
 
     return (
