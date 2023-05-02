@@ -10,6 +10,7 @@ import { appointment } from '@prisma/client';
 import { NewAppointmentType } from '@/types/globals';
 import { UserContext } from '@/context/userContext';
 import { DateTime } from 'luxon';
+import { useRouter } from 'next/router';
 type Props = {
     tutorId: number
 }
@@ -23,6 +24,7 @@ const AppointmentCalendar = (props: Props) => {
     type HighlightedDay = {
 
     }
+    const router = useRouter()
     const [highlightedDays, setHighlightedDays] = React.useState<number[]>([]);
     const userContext = React.useContext(UserContext)
     const [isLoading, setIsLoading] = React.useState(false)
@@ -95,6 +97,7 @@ const AppointmentCalendar = (props: Props) => {
                 await axios.post('/api/appointment', newAppointment)
                 console.log('creating new appointment', { newAppointment })
                 alert('Appointment scheduled')
+                router.push('/appointments')
             } catch (err) {
                 alert('Error creating appointment')
                 console.error(err)

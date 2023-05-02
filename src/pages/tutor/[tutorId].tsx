@@ -1,20 +1,14 @@
-import React, { useEffect } from 'react'
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import NavBar from '../../components/NavBar'
-import { useRouter } from 'next/router'
-import CommonTag from '@/components/tag/CommonTag'
 import TagList from '@/components/tag/TagList'
-import { tutor, user, subject, tutors_subjects, availability } from '@prisma/client';
+import { subject, tutor, tutors_subjects, user } from '@prisma/client'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
+import NavBar from '../../components/NavBar'
 
-import 'react-datetime-picker/dist/DateTimePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import 'react-clock/dist/Clock.css';
-import { LooseValue } from 'react-datetime-picker/dist/cjs/shared/types'
-import { TutorContext } from '@/context/tutorContext'
-import Calendar from 'react-calendar';
 import AppointmentCalendar from '@/components/AppointmentCalendar'
+import 'react-calendar/dist/Calendar.css'
+import 'react-clock/dist/Clock.css'
+import 'react-datetime-picker/dist/DateTimePicker.css'
 // import Calendar from 'reactjs-availability-calendar'
 
 
@@ -31,9 +25,6 @@ const TutorPage = (props) => {
     const [isLoading, setLoading] = React.useState(true)
     const router = useRouter()
     const tutorId = Number(router.query?.tutorId) as number
-    const [chosenDateTime, setChosenDateTime] = React.useState<LooseValue | undefined>(new Date());
-    const [availability, setAvailability] = React.useState<availability[] | null>(null)
-    const tutorContext = React.useContext(TutorContext)
 
     const fetchTutorData = async () => {
         await fetch('../../api/tutor/' + tutorId, { method: 'GET' })
@@ -87,28 +78,8 @@ const TutorPage = (props) => {
         // Stop loading
         setLoading(false)
     }
-
-    const getAvailability = async (tutorId: number) => {
-        if (tutorId) {
-            const response = await tutorContext.getAvailabilityForTutor(tutorId)
-            setAvailability(response)
-        }
-    }
-
-    function areDatesOnSameDay(date1, date2) {
-        return date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate();
-
-        // return true;
-    }
-
     useEffect(() => {
-        getAvailability(tutorId)
-    }, [tutorId])
-    useEffect(() => {
-        if (tutorId)
-            fetchTutorData()
+        fetchTutorData()
     }, [tutorId])
 
     if (isLoading) {
@@ -131,7 +102,7 @@ const TutorPage = (props) => {
                     <NavBar />
                     <div className='p-4 flex flex-col items-center'>
                         <div className='flex flex-col lg:flex-row gap-8 mb-8'>
-                            <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({ currentTarget }) => {
+                            <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full object-cover' onError={({ currentTarget }) => {
                                 // Replace with empty profile picture if src image dne
                                 currentTarget.onerror = null
                                 currentTarget.src = '/emptyprofile.svg'

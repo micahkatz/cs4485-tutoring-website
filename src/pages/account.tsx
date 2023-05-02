@@ -423,7 +423,7 @@ const AccountPage = (props) => {
                             <div className='flex items-center gap-4'>
                                 <button className='relative h-fit w-20' onClick={() => { setUploadDisplay(!uploadDisplay) }}>
                                     {currTutor &&
-                                        <img src={imageURL} alt='Image Not Found' className='bg-gray-400 w-20 h-20 rounded-full' onError={({ currentTarget }) => {
+                                        <img src={imageURL} alt='Image Not Found' className='bg-gray-400 w-20 h-20 rounded-full object-cover' onError={({ currentTarget }) => {
                                             // Replace with empty profile picture if src image dne
                                             currentTarget.onerror = null
                                             currentTarget.src = '/emptyprofile.svg'
