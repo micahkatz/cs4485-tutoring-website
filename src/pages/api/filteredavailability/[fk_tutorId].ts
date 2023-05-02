@@ -8,7 +8,7 @@ import {
     appointment,
 } from '@prisma/client';
 import { TimeFrame } from '@/types/globals';
-import { error } from 'console';
+import { error, time } from 'console';
 import { DateTime } from 'luxon';
 
 const prisma = new PrismaClient();
@@ -81,9 +81,13 @@ const FilterAvailability = (
         }
     }
 
-    for (let i = 0; i < allAppoints.length; i++) {
+    for (
+        let appointIndex = 0;
+        appointIndex < allAppoints.length;
+        appointIndex++
+    ) {
         // Grab info from the appointment
-        let appointment = allAppoints[i];
+        let appointment = allAppoints[appointIndex];
 
         let dayOfTheMonth = appointment.startDT.getUTCDate();
         let appointStartHour = appointment.startDT.getUTCHours();
@@ -92,17 +96,21 @@ const FilterAvailability = (
         // Go through each timeframe for the day of the month
         let timeframes: TimeFrame[] = availDict.get(dayOfTheMonth);
         let newTimeFrames: TimeFrame[] = [];
-        for (let j = 0; j < timeframes.length; j++) {
+        for (
+            let timeframeIndex = 0;
+            timeframeIndex < timeframes.length;
+            timeframeIndex++
+        ) {
             // Grab info from timeframe
-            let timeframe = timeframes[j];
+            let timeframe = timeframes[timeframeIndex];
 
             let availStartHour = timeframe.startDT.getUTCHours();
             let availEndHour = timeframe.endDT.getUTCHours();
 
-            // Check the four cases
+            // Check the three cases
             if (availStartHour == appointStartHour) {
                 // Move start time forward to appointment end time
-                timeframe.startDT = allAppoints[j].endDT;
+                timeframe.startDT = appointment.endDT;
                 if (
                     timeframe.startDT.getUTCHours() ==
                     timeframe.endDT.getUTCHours()
@@ -115,7 +123,7 @@ const FilterAvailability = (
                 }
             } else if (availEndHour == appointEndHour) {
                 // Move end time backward to appointment start time
-                timeframe.endDT = allAppoints[j].startDT;
+                timeframe.endDT = appointment.startDT;
                 if (
                     timeframe.startDT.getUTCHours() ==
                     timeframe.endDT.getUTCHours()
@@ -126,24 +134,49 @@ const FilterAvailability = (
                     // Not fully booked, place in dictionary
                     newTimeFrames.push(timeframe);
                 }
-            } else {
+            } else if (
+                timeframe.startDT.getUTCSeconds() <=
+                    appointment.startDT.getUTCSeconds() &&
+                appointment.endDT.getUTCSeconds() <
+                    timeframe.endDT.getUTCSeconds()
+            ) {
+                // in the middle of their availability
                 // Split into two availability times
                 let split1_timeframe: TimeFrame = {
                     startDT: timeframe.startDT,
-                    endDT: allAppoints[j].startDT,
+                    endDT: appointment.startDT,
                 };
                 let split2_timeframe: TimeFrame = {
-                    startDT: allAppoints[j].endDT,
+                    startDT: appointment.endDT,
                     endDT: timeframe.endDT,
                 };
                 newTimeFrames.push(split1_timeframe);
                 newTimeFrames.push(split2_timeframe);
+            } else {
+                newTimeFrames.push(timeframe);
             }
         }
         availDict.set(dayOfTheMonth, newTimeFrames);
     }
 
     return availDict;
+};
+
+const splitByHour = (
+    filteredAvailability: Map<number, TimeFrame[]>,
+    year: number,
+    month: number
+): Map<number, TimeFrame[]> => {
+    const daysInMonth: number = getDaysInMonth(year, month);
+    for (let i = 1; i <= daysInMonth; i++) {
+        const currAvail = filteredAvailability.get(i);
+
+        currAvail.forEach((item) => {
+            item.startDT;
+        });
+    }
+
+    return filteredAvailability; // TODO: return correct split
 };
 
 export default async function handler(
@@ -195,6 +228,12 @@ export default async function handler(
                     month,
                     allAvails,
                     allAppoints
+                );
+
+                filteredAvailability = splitByHour(
+                    filteredAvailability,
+                    year,
+                    month
                 );
 
                 // Stringify the availability for JSON format
