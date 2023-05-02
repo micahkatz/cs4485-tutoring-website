@@ -131,7 +131,7 @@ const TutorPage = (props) => {
                     <NavBar />
                     <div className='p-4 flex flex-col items-center'>
                         <div className='flex flex-col lg:flex-row gap-8 mb-8'>
-                            <img src='' alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({ currentTarget }) => {
+                            <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='bg-gray-400 w-40 h-40 rounded-full' onError={({ currentTarget }) => {
                                 // Replace with empty profile picture if src image dne
                                 currentTarget.onerror = null
                                 currentTarget.src = '/emptyprofile.svg'

@@ -10,16 +10,18 @@ type Props = {
     filterSubject: string;
     filterDay: Date | undefined;
     filterHours: Date | undefined;
+    filterFavorites: boolean;
 }
 
 const TutorFeed = (props: Props) => {
     const [tutorData, setTutorData] = React.useState<TutorWithSubjects[]>()
     const [tutorUserData, setTutorUserData] = React.useState<user[]>()
     const [tutorSubjectData, setTutorSubjectData] = React.useState<subject[][]>()
+    const [tutorFavoriteRefs, setTutorFavoritesRefs] = React.useState<boolean[]>([])
     const [isLoading, setLoading] = React.useState<boolean>(true)
     const [loadError, setLoadError] = React.useState<boolean>(false)
     const [tutorDisplayIndexes, setTutorDisplayIndexes] = React.useState<number[]>([])
-    const nameFilter = props.filterName, subjectFilter = props.filterSubject, dayFilter = props.filterDay, hoursFilter = props.filterHours;
+    const nameFilter = props.filterName, subjectFilter = props.filterSubject, dayFilter = props.filterDay, hoursFilter = props.filterHours, filterFavorites = props.filterFavorites;
     
     const fetchTutorData = async () => {
         await fetch('api/tutor', {method: 'GET'})
@@ -27,6 +29,12 @@ const TutorFeed = (props: Props) => {
         .then((json) => {
             // read json as tutor array
             const result = json as TutorWithSubjects[]
+
+            // Create refs
+            let refs: boolean[] = []
+            for(let i = 0; i < result.length; i++) {
+                refs.push(false)
+            }
             
             // Check if tutor data is not undefined
             if(result) {
@@ -38,6 +46,9 @@ const TutorFeed = (props: Props) => {
 
                 // Update data state
                 setTutorData(result)
+
+                // Update portals state
+                setTutorFavoritesRefs(refs)
 
                 // Update tutor display indexes
                 let indexes = []
@@ -145,8 +156,8 @@ const TutorFeed = (props: Props) => {
             return
         }
 
-        let indexes = []
-        let blacklist = []
+        let indexes: number[] = []
+        let blacklist: number[] = []
 
         // Parse filters
         /// Name
@@ -201,8 +212,34 @@ const TutorFeed = (props: Props) => {
 
         /// Hours
 
+        /// Favorites
+
         // Set new display indexes
-        setTutorDisplayIndexes(indexes)
+        let sortedIndexes: number[] = []
+        for( let i = 0; i < indexes.length; i++ ) {
+            console.log(tutorFavoriteRefs[indexes[i]])
+            if( tutorFavoriteRefs[indexes[i]] ) {
+                sortedIndexes.unshift(indexes[i])
+            }
+            else {
+                sortedIndexes.push(indexes[i])
+            }
+        }
+        setTutorDisplayIndexes(sortedIndexes)
+    }
+
+    const sortIndexes = () => {
+        let sortedIndexes: number[] = []
+        for( let i = 0; i < tutorDisplayIndexes.length; i++ ) {
+            console.log(tutorFavoriteRefs[tutorDisplayIndexes[i]])
+            if( tutorFavoriteRefs[tutorDisplayIndexes[i]] ) {
+                sortedIndexes.unshift(tutorDisplayIndexes[i])
+            }
+            else {
+                sortedIndexes.push(tutorDisplayIndexes[i])
+            }
+        }
+        setTutorDisplayIndexes(sortedIndexes)
     }
 
     useEffect(() => {
@@ -223,11 +260,15 @@ const TutorFeed = (props: Props) => {
         return (
             <div className='flex justify-center'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4 w-full sm:max-w-[75%] 2xl:max-w-[66%]'>
-                    {tutorData.map(tut => (
-                            <TutorCard key={tut.fk_userID} 
-                            tutor={tut} 
-                            user={tutorUserData[tutorData.indexOf(tut)]} 
-                            subjects={tutorSubjectData[tutorData.indexOf(tut)]}/>
+                    {tutorDisplayIndexes.map(index => (
+                            <TutorCard key={tutorData[index].fk_userID} 
+                            tutor={tutorData[index]} 
+                            user={tutorUserData[index]} 
+                            subjects={tutorSubjectData[index]}
+                            favoriteRefs={tutorFavoriteRefs}
+                            setFavoriteRefs={setTutorFavoritesRefs}
+                            index={index}
+                            sortFunction={sortIndexes}/>
                     ))}
                 </div>
             </div>
