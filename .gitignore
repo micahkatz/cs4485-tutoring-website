@@ -37,3 +37,10 @@ next-env.d.ts
 
 # db
 .env
+
+# uploads
+public/uploads/*.png
+public/uploads/*.jpg
+public/uploads/*.jfif
+public/uploads/*.gif
+public/uploads/*.jpeg

@@ -22,7 +22,7 @@ const TutorCard = (props: Props) => {
             href={'/tutor/'+ tutorData.fk_userID}
         >
             <div className='flex flex-col h-full justify-end'>
-                <img src='' alt='Image Not Found' className='w-full object-cover aspect-square' onError={({currentTarget}) => {
+                <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='w-full object-cover aspect-square' onError={({currentTarget}) => {
                     // Replace with empty profile picture if src image dne
                     currentTarget.onerror = null
                     currentTarget.src='/emptyprofile.svg'
