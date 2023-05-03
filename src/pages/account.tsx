@@ -281,31 +281,34 @@ const AccountPage = (props) => {
     }
 
     const upgradeAccount = async () => {
-        // Display loading wheel
-        setSaving(true)
+        if(confirm('Are you sure you want to upgrade this account to a tutor account?\n' +
+                    'This cannot be reverted.')) {
+            // Display loading wheel
+            setSaving(true)
 
-        // Create tutor object
-        const newTutor: tutor = {
-            fk_userID: userContext.currUser.userID,
-            about_me: '',
-            totalTutorHours: 0,
-            profile_picture: null
+            // Create tutor object
+            const newTutor: tutor = {
+                fk_userID: userContext.currUser.userID,
+                about_me: '',
+                totalTutorHours: 0,
+                profile_picture: null
+            }
+
+            // Make post request to create tutor
+            const createdTutor = await fetch('api/tutor', {method:'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(newTutor)})
+            .then((response) => response.json())
+            .then((json) => {
+                // Reload page
+                setSaving(false)
+                window.location.reload()
+            })
+            .catch((error) => {
+                setErrorMessage("Failed to upgrade the user account.")
+                console.error(error)
+                setSaving(false)
+                return
+            })
         }
-
-        // Make post request to create tutor
-        const createdTutor = await fetch('api/tutor', {method:'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(newTutor)})
-        .then((response) => response.json())
-        .then((json) => {
-            // Reload page
-            setSaving(false)
-            window.location.reload()
-        })
-        .catch((error) => {
-            setErrorMessage("Failed to upgrade the user account.")
-            console.error(error)
-            setSaving(false)
-            return
-        })
     }
 
     const updateFirstName = (event: React.ChangeEvent) => {
