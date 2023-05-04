@@ -129,7 +129,7 @@ const AppointmentCalendar = (props: Props) => {
     }
 
     return (
-        <div className='flex flex-col items-center'>
+        <div className='grid grid-cols-2 gap-4 mt-8'>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
 
                 <DateCalendar
@@ -148,33 +148,30 @@ const AppointmentCalendar = (props: Props) => {
                             highlightedDays,
                         } as any,
                     }}
+                    minDate={dayjs(new Date())}
+                    maxDate={dayjs(DateTime.now().plus({ days: 90 }).toJSDate())}
                 />
             </LocalizationProvider>
-            {
-                currAvailability.filter(item => {
-                    const startDay = item.startDT.getDate()
-                    const currDay = selectedDay.date()
-                    return startDay === currDay
+            <div className='flex flex-col'>
+                {
+                    currAvailability.filter(item => {
+                        const startDay = item.startDT.getDate()
+                        const currDay = selectedDay.date()
+                        return startDay === currDay
+                    }
+                        // item.startDT.getMonth() === selectedDay.month() &&
+                    ).sort((a, b) => a.startDT.getTime() < b.startDT.getTime() ? -1 : 1).map(item => (
+
+                        <AppointmentCard
+                            isNewAppointment
+                            className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
+                            startDT={item.startDT}
+                            endDT={item.endDT}
+                            onClick={() => handleNewAppointment(item)}
+                        />
+                    ))
                 }
-                    // item.startDT.getMonth() === selectedDay.month() &&
-                ).map(item => (
-
-                    <AppointmentCard
-                        isNewAppointment
-                        className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
-                        startDT={item.startDT}
-                        endDT={item.endDT}
-                        onClick={() => handleNewAppointment(item)}
-                    />
-                ))
-            }
-
-            <Modal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            >
-                <h1>New Appointment</h1>
-            </Modal>
+            </div>
         </div>
     )
 }

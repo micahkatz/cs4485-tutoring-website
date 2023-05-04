@@ -11,37 +11,13 @@ import { AppointmentWithStrings } from '@/types/globals'
 type Props = {}
 
 const Appointments = (props) => {
-    const [appointments, setAppointments] = React.useState<appointment[]>([])
     const userContext = React.useContext(UserContext)
-    const getAppointments = async () => {
-        try {
-            const response = await axios.get('/api/appointment', {
-                params: {
-                    userId: userContext?.currUser?.userID
-                }
-            })
-            if (response) {
 
-                const newAppointments: AppointmentWithStrings[] = response.data
-                const filtered = newAppointments.map((item) => {
-                    return {
-                        ...item,
-                        startDT: new Date(item.startDT),
-                        endDT: new Date(item.endDT),
-                    };
-                });
-                setAppointments(filtered)
-            } else {
-                setAppointments([])
-            }
-        } catch (err) {
-            console.error(err)
-            alert('There was an error getting appointments')
-        }
-    }
     React.useEffect(() => {
-        getAppointments()
+        userContext.getAppointments()
     }, [userContext?.currUser?.userID])
+
+    const { appointments } = userContext
     return (
         <>
             <Head>
@@ -60,6 +36,8 @@ const Appointments = (props) => {
                                 <div className='w-full'>
                                     <h2 className='text-center text-2xl'>Next:</h2>
                                     <AppointmentCard className='w-full'
+                                        apptId={appointments?.[0].appointID}
+                                        userId={appointments?.[0].fk_userID}
                                         tutorId={appointments?.[0].fk_tutorID}
                                         startDT={appointments?.[0].startDT}
                                         endDT={appointments?.[0].endDT}
@@ -76,7 +54,10 @@ const Appointments = (props) => {
                                     {
                                         appointments.map((item, index) => (
                                             index > 0 ? (
-                                                <AppointmentCard className='w-full'
+                                                <AppointmentCard
+                                                    className='w-full'
+                                                    apptId={item.appointID}
+                                                    userId={item.fk_userID}
                                                     tutorId={item.fk_tutorID}
                                                     startDT={item.startDT}
                                                     endDT={item.endDT}

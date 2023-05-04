@@ -58,6 +58,12 @@ export default async function handler(
                 const allAppoints = await prisma.appointment.findMany({
                     where: {
                         fk_tutorID: tutorId,
+                        startDT: {
+                            gte: new Date().toISOString(),
+                        },
+                    },
+                    orderBy: {
+                        startDT: 'asc',
                     },
                 });
                 res.status(200).json(allAppoints);
@@ -68,6 +74,12 @@ export default async function handler(
                 const allAppoints = await prisma.appointment.findMany({
                     where: {
                         fk_userID: userId,
+                        startDT: {
+                            gte: new Date().toISOString(),
+                        },
+                    },
+                    orderBy: {
+                        startDT: 'asc',
                     },
                 });
                 res.status(200).json(allAppoints);
