@@ -167,16 +167,71 @@ const splitByHour = (
     year: number,
     month: number
 ): Map<number, TimeFrame[]> => {
+    let newFiltered = new Map<number, TimeFrame[]>();
     const daysInMonth: number = getDaysInMonth(year, month);
     for (let i = 1; i <= daysInMonth; i++) {
-        const currAvail = filteredAvailability.get(i);
+        const TimeFrameList = filteredAvailability.get(i);
+        let newTimeFrames: TimeFrame[] = [];
+        if(TimeFrameList != undefined)
+        {
+            TimeFrameList.forEach((item) => {
+                const startH = item.startDT.getUTCHours();
+                const endH = item.endDT.getUTCHours();
+                const startMins = item.startDT.getUTCMinutes();
+                const endMins = item.endDT.getUTCMinutes();
+    
+                for(let j = startH; j < endH; j++)
+                {
+                    let tf: TimeFrame = {
+                        startDT: undefined,
+                        endDT: undefined,
+                    }
+                    if(j == (endH - 1))
+                    {
+                        //add on end minutes if there are any
+                        tf = {
+                            startDT: new Date(Date.UTC(year, month, i, j)),
+                            endDT: new Date(Date.UTC(year, month, i, j+1)),
+                        }
+                        newTimeFrames.push(tf);
+                        if(endMins != 0)
+                        {
+                            let tf2: TimeFrame = {
+                                startDT: new Date(Date.UTC(year, month, i, j+1)),
+                                endDT: new Date(Date.UTC(year, month, i, j+1, endMins)),
+                            }
+                            newTimeFrames.push(tf2);
+                        }
+                        
+                    }
+                    else if(j == startH)
+                    {
+                        //start the availability if theres any starting minutes
+                        // 4:31 instead of flat 4:00 for example
+                        tf = {
+                            startDT: new Date(Date.UTC(year, month, i, j, startMins)),
+                            endDT: new Date(Date.UTC(year, month, i, j+1)),
+                        }
+                        newTimeFrames.push(tf);
 
-        currAvail.forEach((item) => {
-            item.startDT;
-        });
+                    }
+                    else{
+                        tf = {
+                            startDT: new Date(Date.UTC(year, month, i, j)),
+                            endDT: new Date(Date.UTC(year, month, i, j+1)),
+                        }
+                        newTimeFrames.push(tf);
+                    }   
+                    
+                }
+                
+            });
+            newFiltered.set(i, newTimeFrames);
+        } 
     }
 
-    return filteredAvailability; // TODO: return correct split
+    return newFiltered;
+    // return filteredAvailability; // TODO: return correct split
 };
 
 export default async function handler(
