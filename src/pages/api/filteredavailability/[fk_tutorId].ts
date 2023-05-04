@@ -167,16 +167,47 @@ const splitByHour = (
     year: number,
     month: number
 ): Map<number, TimeFrame[]> => {
+    let newFiltered = new Map<number, TimeFrame[]>();
     const daysInMonth: number = getDaysInMonth(year, month);
     for (let i = 1; i <= daysInMonth; i++) {
-        const currAvail = filteredAvailability.get(i);
-
-        currAvail.forEach((item) => {
-            item.startDT;
-        });
+        const TimeFrameList = filteredAvailability.get(i);
+        let newTimeFrames: TimeFrame[] = [];
+        if(TimeFrameList != undefined)
+        {
+            TimeFrameList.forEach((item) => {
+                const startH = item.startDT.getUTCHours();
+                const endH = item.endDT.getUTCHours();
+                const endMins = item.endDT.getUTCMinutes();
+    
+                for(let j = startH; j < endH; j++)
+                {
+                    let tf: TimeFrame = {
+                        startDT: undefined,
+                        endDT: undefined,
+                    }
+                    if(j == (endH - 1))
+                    {
+                        tf = {
+                            startDT: new Date(Date.UTC(year, month, i, j)),
+                            endDT: new Date(Date.UTC(year, month, i, j+1, endMins)),
+                        }
+                    }
+                    else{
+                        tf = {
+                            startDT: new Date(Date.UTC(year, month, i, j)),
+                            endDT: new Date(Date.UTC(year, month, i, j+1)),
+                        }
+                    }   
+                    newTimeFrames.push(tf);
+                }
+                
+            });
+            newFiltered.set(i, newTimeFrames);
+        } 
     }
 
-    return filteredAvailability; // TODO: return correct split
+    return newFiltered;
+    // return filteredAvailability; // TODO: return correct split
 };
 
 export default async function handler(
