@@ -63,7 +63,7 @@ const AppointmentCard = (props: Props) => {
     return (
         <button
             className={
-                'h-auto border-secondary border-2 rounded-md mt-6 mb-4 hover:scale-105 hover:cursor-pointer transition-all ' +
+                `${props.isNewAppointment ? 'm-4' : 'mt-6 mb-4'} h-auto border-secondary border-2 rounded-md hover:scale-105 hover:cursor-pointer transition-all ` +
                 (props.className || '')
             }
             onClick={() => {
