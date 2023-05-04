@@ -52,12 +52,16 @@ export default async function handler(
 
             break;
         case 'GET': // Getting all appointments
-            if (req.query?.tutorId) {
+            if (req.query?.tutorId && req.query?.userId) {
                 const tutorIdString = req.query.tutorId as string;
                 const tutorId = parseInt(tutorIdString);
+
+                const userIdString = req.query.userId as string;
+                const userId = parseInt(userIdString);
+
                 const allAppoints = await prisma.appointment.findMany({
                     where: {
-                        fk_tutorID: tutorId,
+                        OR: [{ fk_tutorID: tutorId }, { fk_userID: userId }],
                         startDT: {
                             gte: new Date().toISOString(),
                         },
