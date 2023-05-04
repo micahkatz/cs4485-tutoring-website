@@ -31,23 +31,23 @@ const TutorCard = (props: Props) => {
     const sort = props.sortFunction
 
     const fetchFavorite = async () => {
-        await fetch(`api/user/favorites/${userContext.currUser.userID}`, {method: 'GET'})
-        .then((response) => response.json())
-        .then((json) => {
-            let result = json as user_favorites[]
-            
-            // Check if user favorited this tutor
-            for( let i = 0; i < result.length; i++ ) {
-                if( result[i].fk_tutorID == tutorData.fk_userID ) {
-                    setFavorite(true)
-                    setLoading(false)
-                    return
-                }
-            }
+        await fetch(`api/user/favorites/${userContext.currUser.userID}`, { method: 'GET' })
+            .then((response) => response.json())
+            .then((json) => {
+                let result = json as user_favorites[]
 
-            setFavorite(false)
-            setLoading(false)
-        })
+                // Check if user favorited this tutor
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].fk_tutorID == tutorData.fk_userID) {
+                        setFavorite(true)
+                        setLoading(false)
+                        return
+                    }
+                }
+
+                setFavorite(false)
+                setLoading(false)
+            })
     }
 
     const hoveringEventOn = (event: React.MouseEvent<HTMLElement>) => {
@@ -64,7 +64,7 @@ const TutorCard = (props: Props) => {
         setFavorite(newSetting)
 
         // Update user favorites in database
-        if(newSetting) {
+        if (newSetting) {
             // Create new user favorite
             const newFavorite: user_favorites = {
                 fk_userID: userContext.currUser.userID,
@@ -72,15 +72,15 @@ const TutorCard = (props: Props) => {
             }
 
             // Make API Request
-            await fetch('api/user/favorites', {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(newFavorite)})
-            .then((response) => response.json())
-            .then((json) => {
-                // You can do more stuff with the object here if need-be
-            })
-            .catch((error) => {
-                // Error, so unset the favorite.
-                setFavorite(false)
-            })
+            await fetch('api/user/favorites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newFavorite) })
+                .then((response) => response.json())
+                .then((json) => {
+                    userContext.getUserFavorites()
+                })
+                .catch((error) => {
+                    // Error, so unset the favorite.
+                    setFavorite(false)
+                })
         }
         else {
             // Delete existing user favorite
@@ -88,14 +88,14 @@ const TutorCard = (props: Props) => {
                 fk_userID: userContext.currUser.userID,
                 fk_tutorID: tutorData.fk_userID
             }
-            
+
             // Make API Request
-            await fetch('api/user/favorites', {method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(favoriteToDelete)})
-            .then((response) => console.log(response))
-            .catch((error) => {
-                // Error, so reset the favorite
-                setFavorite(true)
-            })
+            await fetch('api/user/favorites', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(favoriteToDelete) })
+                .then((response) => userContext.getUserFavorites())
+                .catch((error) => {
+                    // Error, so reset the favorite
+                    setFavorite(true)
+                })
         }
     }
 
@@ -104,7 +104,7 @@ const TutorCard = (props: Props) => {
     }, [])
 
     React.useEffect(() => {
-        if(favoriteRefs) {
+        if (favoriteRefs) {
             let newRefs = favoriteRefs
             newRefs[favoriteRefsIndex] = isFavorite
             setFavoriteRefs(newRefs)
@@ -112,23 +112,23 @@ const TutorCard = (props: Props) => {
         }
     }, [isFavorite])
 
-    if(isLoading) {
+    if (isLoading) {
         return (
-            <div className='flex justify-center'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF'/></div>
+            <div className='flex justify-center'><Oval width='75' color='#9748FF' secondaryColor='#BCE3FF' /></div>
         )
     }
     else {
         return (
             <div
                 className='border-secondary border-2 rounded-md p-2 m-2 w-auto h-auto hover:scale-105 transition-all'
-                
+
             >
                 <div className='flex flex-col h-full justify-between'>
-                    <Link href={'/tutor/'+ tutorData.fk_userID} >
-                        <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='w-full object-cover aspect-square' onError={({currentTarget}) => {
+                    <Link href={'/tutor/' + tutorData.fk_userID} >
+                        <img src={tutorData.profile_picture ? tutorData.profile_picture : ''} alt='Image Not Found' className='w-full object-cover aspect-square' onError={({ currentTarget }) => {
                             // Replace with empty profile picture if src image dne
                             currentTarget.onerror = null
-                            currentTarget.src='/emptyprofile.svg'
+                            currentTarget.src = '/emptyprofile.svg'
                         }} />
                         <p className='text-lg w-full text-primary'>{userData.first_name} {userData.last_name}</p>
                         <p className='text-sm w-full h-auto text-primary text-left line-clamp-3'>
@@ -138,7 +138,7 @@ const TutorCard = (props: Props) => {
                     <div className='w-full flex mt-2 gap-2 justify-between'>
                         <TagList tags={subjectData} />
                         <div onMouseOver={hoveringEventOn} onMouseLeave={hoveringEventOff} onClick={bookmarkToggleEvent} className='flex flex-col justify-end hover:cursor-pointer' >
-                            {(hoveringBookmark || isFavorite) && <IoBookmark size='2rem' className='' /> || <IoBookmarkOutline size='2rem' className='' />}
+                            {(isFavorite) && <IoBookmark size='2rem' className='' /> || <IoBookmarkOutline size='2rem' className='' />}
                         </div>
                     </div>
                 </div>
