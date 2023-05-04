@@ -1,3 +1,4 @@
+import { UserContext } from '@/context/userContext';
 import { availability, tutor, user } from '@prisma/client';
 import axios from 'axios';
 import React from 'react';
@@ -9,19 +10,23 @@ type Props = {
     endDT: availability['endDT'];
     onClick?: () => void;
     tutorId?: number;
+    apptId?: number;
+    userId?: number;
 };
 
 const AppointmentCard = (props: Props) => {
+    const userContext = React.useContext(UserContext);
     const [currTutor, setCurrTutor] = React.useState<tutor | null>(null);
     const [currTutorUserData, setCurrTutorUserData] = React.useState<user | null>(null);
-    const getTutor = async () => {
+    const getTutor = async (shouldGetUserData = true) => {
         try {
             const response = await axios.get(`/api/tutor/${props.tutorId}`)
             if (response) {
 
                 const resTutor: tutor = response.data
                 setCurrTutor(resTutor)
-                getTutorUserData(resTutor)
+
+                shouldGetUserData && getUserData(resTutor?.fk_userID)
             } else {
                 setCurrTutor(null)
             }
@@ -30,9 +35,9 @@ const AppointmentCard = (props: Props) => {
             alert('There was an error getting appointments')
         }
     }
-    const getTutorUserData = async (tutorData: tutor) => {
+    const getUserData = async (userId: number) => {
         try {
-            const response = await axios.get(`/api/user/${tutorData.fk_userID}`)
+            const response = await axios.get(`/api/user/${userId}`)
             if (response) {
 
                 const resUser: user = response.data
@@ -46,7 +51,14 @@ const AppointmentCard = (props: Props) => {
         }
     }
     React.useEffect(() => {
-        !props.isNewAppointment && getTutor()
+        if (!props.isNewAppointment) {
+            if (userContext?.currUser?.userID === props.tutorId) { // the appointment is with the current user
+                getUserData(props?.userId)
+                getTutor(false)
+            } else {
+                getTutor()
+            }
+        }
     }, [])
     return (
         <button
@@ -63,7 +75,7 @@ const AppointmentCard = (props: Props) => {
             <div className='flex m-2'>
                 {!props?.isNewAppointment && (
                     <img
-                        src={currTutor?.profile_picture ? currTutor?.profile_picture : ''}
+                        src={(currTutor?.profile_picture && currTutorUserData?.userID === currTutor?.fk_userID) ? currTutor?.profile_picture : ''}
                         alt='Image Not Found'
                         className='w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover aspect-square mr-2 border-primary border-2 rounded-md'
                         onError={({ currentTarget }) => {

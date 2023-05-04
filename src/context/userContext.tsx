@@ -62,10 +62,18 @@ export default (props: Props) => {
 
     const getAppointments = async () => {
         try {
-            const response = await axios.get('/api/appointment', {
-                params: {
+            var apptParams;
+            if (isTutor) {
+                apptParams = {
+                    tutorId: currUser?.userID
+                }
+            } else {
+                apptParams = {
                     userId: currUser?.userID
                 }
+            }
+            const response = await axios.get('/api/appointment', {
+                params: apptParams
             })
             if (response) {
 

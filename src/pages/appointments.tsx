@@ -36,6 +36,8 @@ const Appointments = (props) => {
                                 <div className='w-full'>
                                     <h2 className='text-center text-2xl'>Next:</h2>
                                     <AppointmentCard className='w-full'
+                                        apptId={appointments?.[0].appointID}
+                                        userId={appointments?.[0].fk_userID}
                                         tutorId={appointments?.[0].fk_tutorID}
                                         startDT={appointments?.[0].startDT}
                                         endDT={appointments?.[0].endDT}
@@ -52,7 +54,10 @@ const Appointments = (props) => {
                                     {
                                         appointments.map((item, index) => (
                                             index > 0 ? (
-                                                <AppointmentCard className='w-full'
+                                                <AppointmentCard
+                                                    className='w-full'
+                                                    apptId={item.appointID}
+                                                    userId={item.fk_userID}
                                                     tutorId={item.fk_tutorID}
                                                     startDT={item.startDT}
                                                     endDT={item.endDT}
