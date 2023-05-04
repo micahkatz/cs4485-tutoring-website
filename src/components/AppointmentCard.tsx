@@ -1,9 +1,6 @@
-import React from 'react';
-import { IoBookmarkOutline, IoBookmark } from 'react-icons/io5';
-import CommonTag from './tag/CommonTag';
-import Link from 'next/link';
-import { appointment, availability, tutor, user } from '@prisma/client';
+import { availability, tutor, user } from '@prisma/client';
 import axios from 'axios';
+import React from 'react';
 
 type Props = {
     isNewAppointment?: boolean;
@@ -103,11 +100,6 @@ const AppointmentCard = (props: Props) => {
                         })}
                     </span>
                 </div>
-                {!props?.isNewAppointment && (
-                    <div className='w-auto justify-items-end'>
-                        <CommonTag name='Math' />
-                    </div>
-                )}
             </div>
         </button>
     );
