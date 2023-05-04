@@ -104,18 +104,20 @@ const ActionPanel = (props: Props) => {
                             {currTutorUserData?.last_name}
                         </p>
                     </Link>}
-                    <div className='h-full m-auto mx-8 my-4 align-top text-center font-bold space-y-1 max-w-1'>
+                    <Link className='h-full m-auto mx-8 my-4 align-top text-center font-bold space-y-1 max-w-1'
+                        href='/appointments'
+                    >
                         <span className='text-xs md:text-sm line-clamp-1'>
-                            My Appointment
+                            My Appointments
                         </span>
                         <IoCalendarOutline
                             size='7rem'
                             className='h-auto max-h-[75%] sm:max-h-[100%] max-w-[75%] sm:max-w-[100%] m-auto'
                         />
                         <p className='text-sm md:text-base line-clamp-1'>
-                            1 Scheduled
+                            {userContext.appointments?.length || 0} Scheduled
                         </p>
-                    </div>
+                    </Link>
                     <div className='h-full m-auto mx-8 my-4 align-top text-center font-bold space-y-1 max-w-1'>
                         <span className='text-xs md:text-sm line-clamp-1'>
                             My Bookmarks
