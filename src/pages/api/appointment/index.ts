@@ -52,13 +52,28 @@ export default async function handler(
 
             break;
         case 'GET': // Getting all appointments
-            const { tutorId } = req.body;
-            const allAppoints = await prisma.appointment.findMany({
-                where: {
-                    fk_tutorID: tutorId,
-                },
-            });
-            res.status(200).json(allAppoints);
+            if (req.query?.tutorId) {
+                const tutorIdString = req.query.tutorId as string;
+                const tutorId = parseInt(tutorIdString);
+                const allAppoints = await prisma.appointment.findMany({
+                    where: {
+                        fk_tutorID: tutorId,
+                    },
+                });
+                res.status(200).json(allAppoints);
+            } else if (req.query?.userId) {
+                const userIdString = req.query.userId as string;
+                const userId = parseInt(userIdString);
+
+                const allAppoints = await prisma.appointment.findMany({
+                    where: {
+                        fk_userID: userId,
+                    },
+                });
+                res.status(200).json(allAppoints);
+            } else {
+                res.status(403).send('Invalid parameters');
+            }
             break;
         default:
             res.status(405).send('Invalid Request Method');

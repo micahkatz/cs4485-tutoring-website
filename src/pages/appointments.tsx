@@ -3,10 +3,45 @@ import Head from 'next/head'
 import NavBar from '../components/NavBar'
 import AppointmentCard from '../components/AppointmentCard'
 import Link from 'next/link'
+import { appointment } from '@prisma/client'
+import axios from 'axios'
+import { UserContext } from '@/context/userContext'
+import { AppointmentWithStrings } from '@/types/globals'
 
 type Props = {}
 
 const Appointments = (props) => {
+    const [appointments, setAppointments] = React.useState<appointment[]>([])
+    const userContext = React.useContext(UserContext)
+    const getAppointments = async () => {
+        try {
+            const response = await axios.get('/api/appointment', {
+                params: {
+                    userId: userContext?.currUser?.userID
+                }
+            })
+            if (response) {
+
+                const newAppointments: AppointmentWithStrings[] = response.data
+                const filtered = newAppointments.map((item) => {
+                    return {
+                        ...item,
+                        startDT: new Date(item.startDT),
+                        endDT: new Date(item.endDT),
+                    };
+                });
+                setAppointments(filtered)
+            } else {
+                setAppointments([])
+            }
+        } catch (err) {
+            console.error(err)
+            alert('There was an error getting appointments')
+        }
+    }
+    React.useEffect(() => {
+        getAppointments()
+    }, [userContext?.currUser?.userID])
     return (
         <>
             <Head>
@@ -17,27 +52,41 @@ const Appointments = (props) => {
             </Head>
             <main>
                 <NavBar />
-                <h1 className='text-center text-5xl mb-6 font-bold'>My Appointments</h1>
+                <h1 className='text-center text-3xl mb-6 font-bold'>My Appointments</h1>
                 <div className='flex flex-col items-center'>
                     <div className='gird grid-cols-1 justify-center w-full max-w-[66%] lg:max-w-[50%] xl:max-w-[40%]'>
-                        <div className='w-full'>
-                            <h2 className='text-center text-4xl'>Next:</h2>
-                            <AppointmentCard className='w-full'
-                                startDT={new Date('3:00 PM 3/27/2023')}
-                                endDT={new Date('4:00 PM 3/27/2023')}
-                            />
-                        </div>
-                        <div className='w-full'>
-                            <h2 className='text-center text-4xl'>Upcoming:</h2>
-                            <AppointmentCard className='w-full'
-                                startDT={new Date('3:00 PM 3/27/2023')}
-                                endDT={new Date('4:00 PM 3/27/2023')}
-                            />
-                            <AppointmentCard className='w-full'
-                                startDT={new Date('3:00 PM 3/27/2023')}
-                                endDT={new Date('4:00 PM 3/27/2023')}
-                            />
-                        </div>
+                        {
+                            appointments.length > 0 ? (
+                                <div className='w-full'>
+                                    <h2 className='text-center text-2xl'>Next:</h2>
+                                    <AppointmentCard className='w-full'
+                                        tutorId={appointments?.[0].fk_tutorID}
+                                        startDT={appointments?.[0].startDT}
+                                        endDT={appointments?.[0].endDT}
+                                    />
+                                </div>
+                            ) : <div className='w-full'>
+                                <h2 className='text-center text-xl'>You have no upcoming appointments</h2>
+                            </div>
+                        }
+                        {
+                            appointments.length > 1 && (
+                                <div className='w-full'>
+                                    <h2 className='text-center text-2xl'>Upcoming:</h2>
+                                    {
+                                        appointments.map((item, index) => (
+                                            index > 0 ? (
+                                                <AppointmentCard className='w-full'
+                                                    tutorId={item.fk_tutorID}
+                                                    startDT={item.startDT}
+                                                    endDT={item.endDT}
+                                                />
+                                            ) : <></>
+                                        ))
+                                    }
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
             </main>
