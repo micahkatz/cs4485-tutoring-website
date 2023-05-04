@@ -11,37 +11,13 @@ import { AppointmentWithStrings } from '@/types/globals'
 type Props = {}
 
 const Appointments = (props) => {
-    const [appointments, setAppointments] = React.useState<appointment[]>([])
     const userContext = React.useContext(UserContext)
-    const getAppointments = async () => {
-        try {
-            const response = await axios.get('/api/appointment', {
-                params: {
-                    userId: userContext?.currUser?.userID
-                }
-            })
-            if (response) {
 
-                const newAppointments: AppointmentWithStrings[] = response.data
-                const filtered = newAppointments.map((item) => {
-                    return {
-                        ...item,
-                        startDT: new Date(item.startDT),
-                        endDT: new Date(item.endDT),
-                    };
-                });
-                setAppointments(filtered)
-            } else {
-                setAppointments([])
-            }
-        } catch (err) {
-            console.error(err)
-            alert('There was an error getting appointments')
-        }
-    }
     React.useEffect(() => {
-        getAppointments()
+        userContext.getAppointments()
     }, [userContext?.currUser?.userID])
+
+    const { appointments } = userContext
     return (
         <>
             <Head>

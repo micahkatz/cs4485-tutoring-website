@@ -1,5 +1,5 @@
-import { NewUserType, UserWithoutPassword } from '@/types/globals';
-import { user } from '@prisma/client';
+import { AppointmentWithStrings, NewUserType, UserWithoutPassword } from '@/types/globals';
+import { appointment, user } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import bcrypt from 'bcryptjs'
@@ -20,6 +20,8 @@ type UserContextType = {
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
     isTutor: boolean,
     checkIsTutor: () => Promise<void>
+    getAppointments: () => Promise<void>
+    appointments: appointment[]
 }
 export const UserContext = React.createContext<UserContextType | null>(null);
 type Props = {
@@ -37,6 +39,34 @@ export default (props: Props) => {
     const [currUser, setCurrUser] = useLocalStorage<UserWithoutPassword | null>('currUser', null)
     const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>('isLoggedIn', false)
     const [isTutor, setIsTutor] = useLocalStorage<boolean>('isTutor', false)
+    const [appointments, setAppointments] = React.useState<appointment[]>([])
+
+    const getAppointments = async () => {
+        try {
+            const response = await axios.get('/api/appointment', {
+                params: {
+                    userId: currUser?.userID
+                }
+            })
+            if (response) {
+
+                const newAppointments: AppointmentWithStrings[] = response.data
+                const filtered = newAppointments.map((item) => {
+                    return {
+                        ...item,
+                        startDT: new Date(item.startDT),
+                        endDT: new Date(item.endDT),
+                    };
+                });
+                setAppointments(filtered)
+            } else {
+                setAppointments([])
+            }
+        } catch (err) {
+            console.error(err)
+            alert('There was an error getting appointments')
+        }
+    }
 
     const encryptPassword = async (password: string) => {
         var hash = await bcrypt.hash(password, 10);
@@ -151,7 +181,9 @@ export default (props: Props) => {
         setIsLoggedIn,
         isLoggedIn,
         isTutor,
-        checkIsTutor
+        checkIsTutor,
+        appointments,
+        getAppointments
     };
 
     return (
