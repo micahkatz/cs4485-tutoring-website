@@ -44,6 +44,7 @@ const ActionPanel = (props: Props) => {
         setFirstName(userContext?.currUser?.first_name);
         setLastName(userContext?.currUser?.last_name);
         userContext.getAppointments();
+        userContext.getUserFavorites();
     }, [userContext?.currUser]);
     React.useEffect(() => {
         latestAppointment && getTutor(latestAppointment?.fk_tutorID);
@@ -127,7 +128,7 @@ const ActionPanel = (props: Props) => {
                             className='h-auto max-h-[75%] sm:max-h-[100%] max-w-[75%] sm:max-w-[100%] m-auto'
                         />
                         <p className='text-sm md:text-base line-clamp-1'>
-                            0 Saved
+                            {userContext.favorites?.length || 0} Saved
                         </p>
                     </div>
                     {firstName && lastName && (

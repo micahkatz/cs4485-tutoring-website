@@ -1,5 +1,5 @@
 import { AppointmentWithStrings, NewUserType, UserWithoutPassword } from '@/types/globals';
-import { appointment, user } from '@prisma/client';
+import { appointment, user, user_favorites } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import bcrypt from 'bcryptjs'
@@ -22,6 +22,8 @@ type UserContextType = {
     checkIsTutor: () => Promise<void>
     getAppointments: () => Promise<void>
     appointments: appointment[]
+    favorites: user_favorites[]
+    getUserFavorites: () => Promise<void>
 }
 export const UserContext = React.createContext<UserContextType | null>(null);
 type Props = {
@@ -40,6 +42,23 @@ export default (props: Props) => {
     const [isLoggedIn, setIsLoggedIn] = useLocalStorage<boolean>('isLoggedIn', false)
     const [isTutor, setIsTutor] = useLocalStorage<boolean>('isTutor', false)
     const [appointments, setAppointments] = React.useState<appointment[]>([])
+    const [favorites, setFavorites] = React.useState<user_favorites[]>([])
+
+    const getUserFavorites = async () => {
+        try {
+            const response = await axios.get(`/api/user/favorites/${currUser.userID}`)
+            if (response) {
+
+                const userFavorites: user_favorites[] = response.data
+                setFavorites(userFavorites)
+            } else {
+                setFavorites([])
+            }
+        } catch (err) {
+            console.error(err)
+            alert('There was an error getting favorites')
+        }
+    }
 
     const getAppointments = async () => {
         try {
@@ -183,7 +202,9 @@ export default (props: Props) => {
         isTutor,
         checkIsTutor,
         appointments,
-        getAppointments
+        getAppointments,
+        getUserFavorites,
+        favorites
     };
 
     return (
