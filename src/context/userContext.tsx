@@ -65,7 +65,8 @@ export default (props: Props) => {
             var apptParams;
             if (isTutor) {
                 apptParams = {
-                    tutorId: currUser?.userID
+                    tutorId: currUser?.userID,
+                    userId: currUser?.userID
                 }
             } else {
                 apptParams = {

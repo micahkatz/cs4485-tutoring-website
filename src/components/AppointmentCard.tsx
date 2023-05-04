@@ -18,21 +18,18 @@ const AppointmentCard = (props: Props) => {
     const userContext = React.useContext(UserContext);
     const [currTutor, setCurrTutor] = React.useState<tutor | null>(null);
     const [currTutorUserData, setCurrTutorUserData] = React.useState<user | null>(null);
-    const getTutor = async (shouldGetUserData = true) => {
+    const getTutor = async (userId: number) => {
         try {
-            const response = await axios.get(`/api/tutor/${props.tutorId}`)
+            const response = await axios.get(`/api/tutor/${userId}`)
             if (response) {
 
                 const resTutor: tutor = response.data
                 setCurrTutor(resTutor)
-
-                shouldGetUserData && getUserData(resTutor?.fk_userID)
             } else {
                 setCurrTutor(null)
             }
         } catch (err) {
             console.error(err)
-            alert('There was an error getting appointments')
         }
     }
     const getUserData = async (userId: number) => {
@@ -54,9 +51,10 @@ const AppointmentCard = (props: Props) => {
         if (!props.isNewAppointment) {
             if (userContext?.currUser?.userID === props.tutorId) { // the appointment is with the current user
                 getUserData(props?.userId)
-                getTutor(false)
+                getTutor(props?.userId)
             } else {
-                getTutor()
+                getUserData(props?.tutorId)
+                getTutor(props?.tutorId)
             }
         }
     }, [])
@@ -75,7 +73,7 @@ const AppointmentCard = (props: Props) => {
             <div className='flex m-2'>
                 {!props?.isNewAppointment && (
                     <img
-                        src={(currTutor?.profile_picture && currTutorUserData?.userID === currTutor?.fk_userID) ? currTutor?.profile_picture : ''}
+                        src={(currTutor?.profile_picture) ? currTutor?.profile_picture : ''}
                         alt='Image Not Found'
                         className='w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover aspect-square mr-2 border-primary border-2 rounded-md'
                         onError={({ currentTarget }) => {
