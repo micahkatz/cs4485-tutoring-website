@@ -148,6 +148,8 @@ const AppointmentCalendar = (props: Props) => {
                             highlightedDays,
                         } as any,
                     }}
+                    minDate={dayjs(new Date())}
+                    maxDate={dayjs(DateTime.now().plus({ days: 90 }).toJSDate())}
                 />
             </LocalizationProvider>
             {
