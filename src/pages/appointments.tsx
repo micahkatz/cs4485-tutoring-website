@@ -52,7 +52,7 @@ const Appointments = (props) => {
             </Head>
             <main>
                 <NavBar />
-                <h1 className='text-center text-5xl mb-6 font-bold'>My Appointments</h1>
+                <h1 className='text-center text-3xl mb-6 font-bold'>My Appointments</h1>
                 <div className='flex flex-col items-center'>
                     <div className='gird grid-cols-1 justify-center w-full max-w-[66%] lg:max-w-[50%] xl:max-w-[40%]'>
                         {
@@ -72,7 +72,7 @@ const Appointments = (props) => {
                         {
                             appointments.length > 1 && (
                                 <div className='w-full'>
-                                    <h2 className='text-center text-4xl'>Upcoming:</h2>
+                                    <h2 className='text-center text-2xl'>Upcoming:</h2>
                                     {
                                         appointments.map((item, index) => (
                                             index > 0 ? (
