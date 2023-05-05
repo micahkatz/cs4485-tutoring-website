@@ -428,7 +428,10 @@ const AccountPage = (props) => {
     }
 
     useEffect(() => {
-        loadProfile()
+        if(userContext?.currUser)
+            loadProfile()
+        else
+            location.href = '/login'
     }, [])
 
     useEffect(() => {
