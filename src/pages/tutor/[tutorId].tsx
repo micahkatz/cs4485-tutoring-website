@@ -110,6 +110,10 @@ const TutorPage = (props) => {
                             <div>
                                 <span className='text-lg font-bold'>{tutorUserData.first_name + " " + tutorUserData.last_name}</span>
                                 <p>{tutorData.about_me}</p>
+                                <div className='text-sm mt-2'>
+                                    <span>Tutor Hours: </span>
+                                    <span className='font-bold'>{tutorData.totalTutorHours}</span>
+                                </div>
                                 <TagList tags={tutorSubjectData}
                                     className='mt-2'
                                 />
