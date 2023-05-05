@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Prisma, appointment } from '@prisma/client';
+import { PrismaClient, Prisma, appointment, tutor, user } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -18,6 +18,69 @@ export default async function handler(
                 const createResponse = await prisma.appointment.create({
                     data: withoutId,
                 });
+
+                // Update tutor's tutor hours
+                const tut = await prisma.tutor.findFirst({
+                    where: {
+                        fk_userID: body.fk_tutorID,
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error grabbing tutor to update tutor hours")
+                    console.error(error)
+                })
+                
+                const endDT = new Date(body.endDT), startDT = new Date(body.startDT)
+                let appointmentHours = endDT.getHours() - startDT.getHours()
+                if(appointmentHours == 0) appointmentHours = 1;
+                if(tut) {
+                    const newHours = tut.totalTutorHours + appointmentHours
+                    await prisma.tutor.update({
+                        where: {
+                            fk_userID: body.fk_tutorID,
+                        },
+                        data: {
+                            totalTutorHours: newHours,
+                        },
+                    })
+                    .catch((error) => {
+                        console.log("Error updating tutor hours")
+                        console.error(error)
+                    })
+                }
+                else {
+                    console.log("Error: Tutor ID returned undefined tutor")
+                }
+
+                // Update user's learn hours
+                const u = await prisma.user.findFirst({
+                    where: {
+                        userID: body.fk_userID,
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error grabbing user to update learn hours")
+                    console.error(error)
+                })
+                
+                if(u) {
+                    const newHours = u.totalLearnHours + appointmentHours
+                    await prisma.user.update({
+                        where: {
+                            userID: body.fk_userID,
+                        },
+                        data: {
+                            totalLearnHours: newHours,
+                        },
+                    })
+                    .catch((error) => {
+                        console.log("Error updating learn hours")
+                        console.error(error)
+                    })
+                }
+                else {
+                    console.log("Error: User ID returned undefined user")
+                }
 
                 res.status(200).json(createResponse);
             } catch (error) {

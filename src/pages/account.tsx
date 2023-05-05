@@ -508,12 +508,12 @@ const AccountPage = (props) => {
                                 <div className='w-full flex justify-between mb-2'>
                                     <div className='text-sm'>
                                         <span>Learn Hours: </span>
-                                        <span className='font-bold'>{userContext.currUser.totalLearnHours}</span>
+                                        <span className='font-bold'>{userContext?.currUser?.totalLearnHours}</span>
                                     </div>
                                     {currTutor && 
                                     <div className='text-sm'>
                                         <span>Tutor Hours: </span>
-                                        <span className='font-bold'>{currTutor.totalTutorHours}</span>
+                                        <span className='font-bold'>{currTutor?.totalTutorHours}</span>
                                     </div>}
                                 </div>
                                 {currTutor &&

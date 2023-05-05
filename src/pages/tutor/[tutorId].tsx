@@ -29,14 +29,14 @@ const TutorPage = (props) => {
     const fetchTutorData = async () => {
         await fetch('../../api/tutor/' + tutorId, { method: 'GET' })
             .then((resp) => resp.json())
-            .then((json) => {
+            .then(async (json) => {
                 let result = json as TutorWithSubjects
 
                 // Fetch user data
-                fetchTutorUserData(result)
+                await fetchTutorUserData(result)
 
                 // Fetch subject data
-                fetchTutorSubjectData(result)
+                await fetchTutorSubjectData(result)
 
                 // Update data state
                 setTutorData(result)
