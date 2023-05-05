@@ -188,7 +188,10 @@ const AvailabilityPage = (props) => {
     };
 
     useEffect(() => {
-        getAvailability(tutorId);
+        if(userContext?.currUser)
+            getAvailability(tutorId);
+        else
+            location.href = '/login'
     }, [tutorId]);
 
     return (

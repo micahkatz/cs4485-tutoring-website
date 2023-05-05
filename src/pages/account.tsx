@@ -428,7 +428,10 @@ const AccountPage = (props) => {
     }
 
     useEffect(() => {
-        loadProfile()
+        if(userContext?.currUser)
+            loadProfile()
+        else
+            location.href = '/login'
     }, [])
 
     useEffect(() => {
@@ -505,6 +508,17 @@ const AccountPage = (props) => {
                                         defaultValue={aboutMe}
                                         onChange={updateAboutMe}
                                     />}
+                                <div className='w-full flex justify-between mb-2'>
+                                    <div className='text-sm'>
+                                        <span>Learn Hours: </span>
+                                        <span className='font-bold'>{userContext?.currUser?.totalLearnHours}</span>
+                                    </div>
+                                    {currTutor && 
+                                    <div className='text-sm'>
+                                        <span>Tutor Hours: </span>
+                                        <span className='font-bold'>{currTutor?.totalTutorHours}</span>
+                                    </div>}
+                                </div>
                                 {currTutor &&
                                     <div className='flex flex-col mb-2'>
                                         <span className='text-sm'>Subjects</span>

@@ -97,6 +97,13 @@ const AppointmentCalendar = (props: Props) => {
                 await axios.post('/api/appointment', newAppointment)
                 console.log('creating new appointment', { newAppointment })
                 alert('Appointment scheduled')
+                let additionalHours = times.endDT.getHours() - times.startDT.getHours()
+                if(additionalHours == 0) additionalHours = 1;
+                    userContext.setCurrUser((previous) => {
+                        return {
+                            ...previous, totalLearnHours: previous.totalLearnHours + additionalHours
+                        }
+                    })
                 router.push('/appointments')
             } catch (err) {
                 alert('Error creating appointment')
@@ -163,6 +170,7 @@ const AppointmentCalendar = (props: Props) => {
                     ).sort((a, b) => a.startDT.getTime() < b.startDT.getTime() ? -1 : 1).map(item => (
 
                         <AppointmentCard
+                            key={item.startDT.getTime()}
                             isNewAppointment
                             className='mb-1 mt-0 px-2 py-1 bg-secondary border-none'
                             startDT={item.startDT}

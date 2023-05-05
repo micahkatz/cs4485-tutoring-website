@@ -14,7 +14,10 @@ const Appointments = (props) => {
     const userContext = React.useContext(UserContext)
 
     React.useEffect(() => {
-        userContext.getAppointments()
+        if(userContext?.currUser)
+            userContext.getAppointments()
+        else
+            location.href = '/login'
     }, [userContext?.currUser?.userID])
 
     const { appointments } = userContext

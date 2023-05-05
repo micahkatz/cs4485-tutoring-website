@@ -23,10 +23,11 @@ const NavBar = (props: Props) => {
     };
     React.useEffect(() => {
         userContext.checkIsTutor();
-        fetchTutorData();
     }, []);
     React.useEffect(() => {
         setIsTutor(userContext?.isTutor);
+        if( userContext?.isTutor )
+            fetchTutorData();
     }, [userContext?.isTutor]);
     return (
         <nav className='w-full flex justify-between items-center h-16'>

@@ -92,6 +92,7 @@ const FilterAvailability = (
         let dayOfTheMonth = appointment.startDT.getUTCDate();
         let appointStartHour = appointment.startDT.getUTCHours();
         let appointEndHour = appointment.endDT.getUTCHours();
+        let appointEndMinutes = appointment.endDT.getUTCMinutes();
 
         // Go through each timeframe for the day of the month
         let timeframes: TimeFrame[] = availDict.get(dayOfTheMonth);
@@ -106,6 +107,7 @@ const FilterAvailability = (
 
             let availStartHour = timeframe.startDT.getUTCHours();
             let availEndHour = timeframe.endDT.getUTCHours();
+            let availEndMinutes = timeframe.endDT.getUTCMinutes();
 
             // Check the three cases
             if (availStartHour == appointStartHour) {
@@ -121,7 +123,7 @@ const FilterAvailability = (
                     // Not fully booked, place in dictionary
                     newTimeFrames.push(timeframe);
                 }
-            } else if (availEndHour == appointEndHour) {
+            } else if (availEndHour == appointEndHour && availEndMinutes == appointEndMinutes) {
                 // Move end time backward to appointment start time
                 timeframe.endDT = appointment.startDT;
                 if (
@@ -137,7 +139,7 @@ const FilterAvailability = (
             } else if (
                 timeframe.startDT.getUTCSeconds() <=
                     appointment.startDT.getUTCSeconds() &&
-                appointment.endDT.getUTCSeconds() <
+                appointment.endDT.getUTCSeconds() <=
                     timeframe.endDT.getUTCSeconds()
             ) {
                 // in the middle of their availability
@@ -179,7 +181,11 @@ const splitByHour = (
                 const endH = item.endDT.getUTCHours();
                 const startMins = item.startDT.getUTCMinutes();
                 const endMins = item.endDT.getUTCMinutes();
-    
+                
+                if(startH == endH) {
+                    newTimeFrames.push(item)
+                }
+
                 for(let j = startH; j < endH; j++)
                 {
                     let tf: TimeFrame = {
@@ -190,7 +196,7 @@ const splitByHour = (
                     {
                         //add on end minutes if there are any
                         tf = {
-                            startDT: new Date(Date.UTC(year, month, i, j)),
+                            startDT: new Date(Date.UTC(year, month, i, j, j == startH ? startMins : 0)),
                             endDT: new Date(Date.UTC(year, month, i, j+1)),
                         }
                         newTimeFrames.push(tf);
