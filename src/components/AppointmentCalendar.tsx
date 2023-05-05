@@ -99,7 +99,11 @@ const AppointmentCalendar = (props: Props) => {
                 alert('Appointment scheduled')
                 let additionalHours = times.endDT.getHours() - times.startDT.getHours()
                 if(additionalHours == 0) additionalHours = 1;
-                userContext.currUser.totalLearnHours += additionalHours
+                    userContext.setCurrUser((previous) => {
+                        return {
+                            ...previous, totalLearnHours: previous.totalLearnHours + additionalHours
+                        }
+                    })
                 router.push('/appointments')
             } catch (err) {
                 alert('Error creating appointment')
